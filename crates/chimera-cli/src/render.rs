@@ -116,7 +116,7 @@ pub fn speech(ctx: &Ctx, a: &[String]) -> Result<(), String> {
     ctx.write_wav(&file, &out)?;
     println!(
         "wrote {file}  {} s  peak {}",
-        fixed(total as f64 / FS, 2),
+        fixed(ctx.output_seconds(total), 2),
         fixed(peak(&out), 3)
     );
     println!("{}", mark_line(&marks));
@@ -201,7 +201,7 @@ pub fn text(ctx: &Ctx, a: &[String]) -> Result<(), String> {
     ctx.write_wav(&file, &s.out)?;
     println!(
         "wrote {file}  {} s, rendered in {} ms",
-        fixed(s.out.len() as f64 / FS, 2),
+        fixed(ctx.output_seconds(s.out.len()), 2),
         fixed(ms, 0)
     );
     Ok(())
@@ -266,7 +266,7 @@ pub fn song(ctx: &Ctx, a: &[String]) -> Result<(), String> {
         println!(
             "{}: {} s, peak {}, syllables {}",
             song.name,
-            fixed(n as f64 / FS, 1),
+            fixed(ctx.output_seconds(n), 1),
             fixed(peak(&out), 3),
             syl_text(&syl)
         );
@@ -561,7 +561,7 @@ pub fn notes(ctx: &Ctx, a: &[String]) -> Result<(), String> {
         (Vec::new(), None)
     };
     ctx.write_wav(&out_name, &out)?;
-    println!("{out_name}: {} s, peak {}, {} notes", fixed(n as f64 / FS, 2), fixed(peak(&out), 3), sounding);
+    println!("{out_name}: {} s, peak {}, {} notes", fixed(ctx.output_seconds(n), 2), fixed(peak(&out), 3), sounding);
     if let Some(path) = &artic_out {
         let j = serde_json::json!({"rate": ARTIC_RATE, "body": body_name, "keys": ArticKey::NAMES, "frames": frames});
         std::fs::write(path, j.to_string()).map_err(|e| format!("{path}: {e}"))?;
@@ -690,7 +690,7 @@ pub fn beatbox(ctx: &Ctx, a: &[String]) -> Result<(), String> {
     println!(
         "pattern \"{}\": {} s, peak {} -> {file}",
         name,
-        fixed(total as f64 / FS, 2),
+        fixed(ctx.output_seconds(total), 2),
         fixed(peak(&out), 3)
     );
     Ok(())
@@ -770,7 +770,7 @@ pub fn creature(ctx: &Ctx, a: &[String]) -> Result<(), String> {
     println!(
         "{}: {} s in {} ms ({}% RT, internal {} Hz)  peak {}  non-finite {bad}",
         def.name,
-        fixed(total / FS, 1),
+        fixed(ctx.output_seconds(out.len()), 1),
         fixed(ms, 0),
         fixed(ms / 1000.0 / (total / FS) * 100.0, 1),
         num(v.fs),

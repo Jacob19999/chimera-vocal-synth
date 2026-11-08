@@ -13,6 +13,9 @@ import type {
 
 export type * from "./types.ts";
 
+/** Room presets come from the shared native/wasm DSP. */
+export const ENVIRONMENTS = call<import("./types.ts").EnvironmentPreset[]>("environments");
+
 interface Catalog {
   neutral: HumanArtic;
   bodies: { male: HumanBody; female: HumanBody; child: HumanBody };

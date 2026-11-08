@@ -5,6 +5,7 @@ import type { Segment, PlannedSegment } from "../wasm/types.ts";
 import type { Gesture } from "../wasm/types.ts";
 import type { CreatureTelemetry } from "../wasm/types.ts";
 import type { BeatStep, BodyMix } from "../wasm/types.ts";
+import type { EnvironmentSettings } from "../wasm/types.ts";
 
 export interface PhraseMsg {
   segments: Segment[];
@@ -15,6 +16,7 @@ export interface PhraseMsg {
 export type BodyName = "male" | "female" | "child";
 
 export type ToWorklet =
+  | { type: "environment"; settings: EnvironmentSettings }
   | { type: "body"; body: BodyMix }
   | { type: "artic"; values: Partial<HumanArtic>; tipFree?: boolean }
   | { type: "source"; values: Partial<VoiceSource> }

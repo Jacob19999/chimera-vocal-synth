@@ -138,12 +138,15 @@ consumption or sums (noise sources, gestures). It retunes nothing. The checks:
   then imports the app. A failure shows a retryable error screen.
 - **Audio thread (worklet).** The exports are C ABI with numbers and pointers only, over one
   engine handle.
-  - Engine-owned buffers have a stable address for the engine's lifetime: an output buffer of
-    up to 4 096 frames, a command scratch area, and the telemetry block. JS re-creates its
+  - Engine-owned buffers have a stable address for the engine's lifetime: left and right output
+    buffers of up to 4 096 frames, a command scratch area, and the telemetry block. `engine_render`
+    returns the left buffer; `engine_output_right` returns the right buffer from that same render.
+    `engine_set_environment` sets a numeric preset, mix, decay, and damping without changing
+    gesture records. JS re-creates its
     typed-array views whenever `memory.buffer` has changed, and copies telemetry before the
     next call.
-  - Gestures cross as fixed 256-byte little-endian records, layout version 1, specified in
-    `crates/chimera-wasm/src/lib.rs` and mirrored by `src/engine/wire.ts`:
+  - Gestures cross as fixed 272-byte little-endian records, layout version 1, specified in
+    `crates/chimera-wasm/src/lib.rs` and mirrored by `src/wasm/wire.ts`:
     - eight `f64`s: t0, t1, rampIn, rampOut, strength, speed, releaseHold, tag;
     - 22 `f64` targets in `ControlKey` order;
     - a u8 label length and 24 bytes of UTF-8;

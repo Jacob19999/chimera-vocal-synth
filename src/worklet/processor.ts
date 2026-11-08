@@ -105,6 +105,12 @@ class ChimeraProcessor extends AudioWorkletProcessor {
   private handle(m: ToWorklet): void {
     const x = this.x, h = this.h;
     switch (m.type) {
+      case "environment": {
+        const s = m.settings;
+        const preset = ["dry", "studio", "room", "hall", "cathedral"].indexOf(s.preset);
+        x.engine_set_environment(h, Math.max(0, preset), s.mix, s.decay, s.damping);
+        break;
+      }
       case "body":
         x.engine_set_body(h, m.body.female, m.body.child);
         this.postReady();
@@ -191,11 +197,11 @@ class ChimeraProcessor extends AudioWorkletProcessor {
     try {
       const p = this.x.engine_render(this.h, ch0.length);
       ch0.set(new Float32Array(this.mem, p, ch0.length));
+      for (let c = 1; c < out.length; c++) out[c].set(new Float32Array(this.mem, this.x.engine_output_right(this.h), ch0.length));
     } catch (err) {
-      ch0.fill(0);
+      for (const ch of out) ch.fill(0);
       this.fail(err);
     }
-    for (let c = 1; c < out.length; c++) out[c].set(ch0);
     const dt = Date.now() - t0;
     const budget = (ch0.length / sampleRate) * 1000;
     this.load += 0.05 * (dt / budget - this.load);

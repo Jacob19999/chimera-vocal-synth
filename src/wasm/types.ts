@@ -303,3 +303,21 @@ export interface CreatureTelemetry {
   source: Record<string, number>;
   call: string | null;
 }
+export type EnvironmentId = "dry" | "studio" | "room" | "hall" | "cathedral";
+
+export interface EnvironmentSettings {
+  preset: EnvironmentId;
+  mix: number;
+  decay: number;
+  damping: number;
+}
+
+export interface EnvironmentPreset {
+  id: EnvironmentId;
+  preset: EnvironmentId;
+  label: string;
+  dimensions: [number, number, number];
+  decay: number;
+  damping: number;
+  mix: number;
+}

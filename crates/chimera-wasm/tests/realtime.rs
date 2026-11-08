@@ -55,6 +55,7 @@ fn the_audio_thread_abi_does_not_allocate() {
         };
         render(40); // idle for a while: nothing labelled has been seen yet
         let before = allocs();
+        engine_set_environment(h, 3, 0.35, 2.2, 0.4);
         let rec = std::slice::from_raw_parts_mut(engine_records(h), plan.gestures.len() * GESTURE_RECORD);
         for (i, g) in plan.gestures.iter().enumerate() {
             write_gesture(g, &mut rec[i * GESTURE_RECORD..(i + 1) * GESTURE_RECORD]);
@@ -75,6 +76,11 @@ fn the_audio_thread_abi_does_not_allocate() {
         }
         engine_set_beat(h, 1, 4, 120.0, 0.1, 1);
         render(300);
+        engine_set_environment(h, 1, 0.2, 0.25, 0.75);
+        render(8);
+        engine_set_environment(h, 4, 0.5, 5.0, 0.2);
+        render(100);
+        assert!(!engine_output_right(h).is_null());
         write_step(&mut steps[..STEP_RECORD], "K");
         engine_beat_hit(h);
         engine_release(h, 7.0);

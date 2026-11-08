@@ -59,6 +59,7 @@ fn dispatch(st: &mut State, req: &Value) -> Res {
     match name {
         "version" => Ok(json!({ "layout": crate::LAYOUT_VERSION, "crate": env!("CARGO_PKG_VERSION") })),
         "catalog" => catalog(),
+        "environments" => Ok(json!(chimera::environment::PRESETS)),
         // ---------------------------------------------------------------- the anatomy model
         "model" => {
             // the main-thread mirror of the worklet's airway: same topology and node counts

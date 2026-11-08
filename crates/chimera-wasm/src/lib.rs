@@ -37,6 +37,7 @@ pub mod api;
 use chimera::anatomy::human::{ArticPatch, BodyMix, N_ARTIC};
 use chimera::control::score::{Gesture, Label, N_CONTROL, Targets};
 use chimera::engine::{Engine, MAX_SCHEDULE};
+use chimera::environment::{EnvironmentPreset, EnvironmentSettings};
 use chimera::phonetics::beatbox::BeatStep;
 use chimera::voice::human_voice::{SourcePatch, VoiceTelemetry};
 
@@ -119,6 +120,7 @@ pub fn write_gesture(g: &Gesture, b: &mut [u8]) {
 pub struct Handle {
     engine: Engine,
     out: Vec<f32>,
+    out_right: Vec<f32>,
     /// MAX_SCHEDULE gesture records written by JS before `engine_schedule`
     records: Vec<u8>,
     gestures: Vec<Gesture>,
@@ -139,6 +141,7 @@ pub extern "C" fn engine_new(sample_rate: f64) -> *mut Handle {
     let mut h = Box::new(Handle {
         engine: Engine::new(sample_rate),
         out: vec![0.0; MAX_RENDER],
+        out_right: vec![0.0; MAX_RENDER],
         records: vec![0u8; MAX_SCHEDULE * GESTURE_RECORD],
         gestures: Vec::with_capacity(MAX_SCHEDULE),
         values: vec![f64::NAN; 32],
@@ -176,8 +179,25 @@ macro_rules! handle {
 pub unsafe extern "C" fn engine_render(h: *mut Handle, n: usize) -> *const f32 {
     let h = handle!(h);
     let n = n.min(MAX_RENDER);
-    h.engine.render(&mut h.out[..n]);
+    h.engine.render_stereo(&mut h.out[..n], &mut h.out_right[..n]);
     h.out.as_ptr()
+}
+
+/// Right channel of the most recent `engine_render`, with the same frame count.
+/// # Safety
+/// `h` must be a live handle.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn engine_output_right(h: *mut Handle) -> *const f32 {
+    handle!(h).out_right.as_ptr()
+}
+
+/// Environment preset 0 dry, 1 studio, 2 room, 3 hall, 4 cathedral; mix/damping 0..1,
+/// decay 0.1..8 seconds. Sanitizes non-finite parameters. No gesture layout changes.
+/// # Safety
+/// `h` must be a live handle.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn engine_set_environment(h: *mut Handle, preset: u32, mix: f64, decay: f64, damping: f64) {
+    handle!(h).engine.set_environment(EnvironmentSettings { preset: EnvironmentPreset::from_index(preset), mix, decay, damping });
 }
 
 /// The record area JavaScript fills before `engine_schedule` (MAX_SCHEDULE records).

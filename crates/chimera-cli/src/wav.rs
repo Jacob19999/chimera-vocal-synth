@@ -6,6 +6,11 @@ use chimera::math::js_round;
 use std::path::Path;
 
 pub fn write(path: &str, x: &[f32], sample_rate: u32, float: bool) -> std::io::Result<()> {
+    write_channels(path, x, sample_rate, float, 1)
+}
+
+/// Interleaved PCM/float; dry renders continue to use the exact original mono writer.
+pub fn write_channels(path: &str, x: &[f32], sample_rate: u32, float: bool, channels: u16) -> std::io::Result<()> {
     let (format, bytes_per_sample): (u16, u32) = if float { (3, 4) } else { (1, 2) };
     let data_bytes = x.len() as u32 * bytes_per_sample;
     let mut b = Vec::with_capacity(44 + data_bytes as usize);
@@ -14,10 +19,10 @@ pub fn write(path: &str, x: &[f32], sample_rate: u32, float: bool) -> std::io::R
     b.extend_from_slice(b"WAVEfmt ");
     b.extend_from_slice(&16u32.to_le_bytes());
     b.extend_from_slice(&format.to_le_bytes());
-    b.extend_from_slice(&1u16.to_le_bytes());
+    b.extend_from_slice(&channels.to_le_bytes());
     b.extend_from_slice(&sample_rate.to_le_bytes());
-    b.extend_from_slice(&(sample_rate * bytes_per_sample).to_le_bytes());
-    b.extend_from_slice(&(bytes_per_sample as u16).to_le_bytes());
+    b.extend_from_slice(&(sample_rate * bytes_per_sample * channels as u32).to_le_bytes());
+    b.extend_from_slice(&(bytes_per_sample as u16 * channels).to_le_bytes());
     b.extend_from_slice(&(bytes_per_sample as u16 * 8).to_le_bytes());
     b.extend_from_slice(b"data");
     b.extend_from_slice(&data_bytes.to_le_bytes());

@@ -75,6 +75,46 @@ fn render_speech_writes_a_sounding_wav_of_the_planned_length() {
 }
 
 #[test]
+fn room_renders_are_stereo_with_a_tail_and_zero_mix_is_exactly_dry() {
+    let dry = tmp("room-dry");
+    let muted = tmp("room-zero-mix");
+    let hall = tmp("room-hall");
+    chimera(&["render", "speech", &dry, "ˈhɛloʊ", "--float"]);
+    chimera(&["render", "speech", &muted, "ˈhɛloʊ", "--environment", "hall", "--room-mix", "0", "--float"]);
+    chimera(&["render", "speech", &hall, "ˈhɛloʊ", "--environment", "hall", "--room-mix", "0.5", "--float"]);
+    let dry = std::fs::read(format!("{dry}.wav")).unwrap();
+    let muted = std::fs::read(format!("{muted}.wav")).unwrap();
+    assert_eq!(muted, dry, "zero mix must preserve the mono file, its length and every sample");
+    let hall = std::fs::read(format!("{hall}.wav")).unwrap();
+    assert_eq!(u16::from_le_bytes(hall[20..22].try_into().unwrap()), 3, "float WAV");
+    assert_eq!(u16::from_le_bytes(hall[22..24].try_into().unwrap()), 2, "stereo");
+    assert_eq!(u32::from_le_bytes(hall[28..32].try_into().unwrap()), 48000 * 8, "stereo byte rate");
+    assert_eq!(u16::from_le_bytes(hall[32..34].try_into().unwrap()), 8, "frame alignment");
+    let source_frames = (dry.len() - 44) / 4;
+    let tail = (chimera::environment::EnvironmentSettings::for_preset(chimera::environment::EnvironmentPreset::Hall).tail_seconds() * 48000.0).ceil() as usize;
+    assert_eq!((hall.len() - 44) / 8, source_frames + tail);
+    let samples: Vec<f32> = hall[44..].chunks_exact(4).map(|b| f32::from_le_bytes(b.try_into().unwrap())).collect();
+    assert!(samples.iter().all(|s| s.is_finite()));
+    assert!(samples.chunks_exact(2).any(|s| (s[0] - s[1]).abs() > 1e-4));
+    assert!(samples[2 * source_frames..].iter().any(|s| s.abs() > 1e-5), "the room tail must actually sound");
+}
+
+#[test]
+fn invalid_environment_controls_fail_before_rendering_or_scoring() {
+    for flags in [
+        vec!["render", "speech", "unused", "--environment", "unknown"],
+        vec!["render", "speech", "unused", "--environment", "hall", "--room-decay", "NaN"],
+        vec!["render", "speech", "unused", "--environment", "hall", "--room-mix", "2"],
+        vec!["render", "speech", "unused", "--environment"],
+        vec!["compare", "csd", "--environment", "hall"],
+    ] {
+        let result = Command::new(env!("CARGO_BIN_EXE_chimera")).args(&flags).output().unwrap();
+        assert!(!result.status.success(), "accepted {flags:?}");
+        assert!(!result.stderr.is_empty());
+    }
+}
+
+#[test]
 fn calibrate_consonants_reproduces_the_committed_table() {
     let out = tmp("consonantTargets.json");
     chimera(&["calibrate", "consonants", "--out", &out]);
