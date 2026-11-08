@@ -16,6 +16,7 @@ use crate::creatures::types::CreatureDef;
 use crate::creatures::voice::{CreatureTelemetry, CreatureVoice};
 use crate::phonetics::beatbox::{BeatStep, MAX_SOUND_GESTURES};
 use crate::voice::human_voice::{HumanVoice, SourcePatch, VoiceTelemetry};
+use crate::environment::{Environment, EnvironmentSettings};
 
 /// Samples per sub-block: the browser's render quantum, kept for every host.
 pub const SUB_BLOCK: usize = 128;
@@ -56,13 +57,14 @@ pub struct Engine {
     beat: BeatPlayer,
     /// a creature playing instead of the human voice (whose clock then stands still)
     creature: Option<CreatureVoice>,
+    environment: Environment,
 }
 
 impl Engine {
     pub fn new(sample_rate: f64) -> Engine {
         crate::init();
         let body = BodyMix::MALE;
-        Engine { sample_rate, body, voice: Self::make_voice(sample_rate, body), gate_level: 0.0, pos: 0, scratch: Vec::with_capacity(MAX_SCHEDULE), beat: BeatPlayer::new(), creature: None }
+        Engine { sample_rate, body, voice: Self::make_voice(sample_rate, body), gate_level: 0.0, pos: 0, scratch: Vec::with_capacity(MAX_SCHEDULE), beat: BeatPlayer::new(), creature: None, environment: Environment::new(sample_rate) }
     }
 
     fn make_voice(fs: f64, body: BodyMix) -> HumanVoice {
@@ -208,7 +210,18 @@ impl Engine {
         self.voice.clock
     }
 
-    /// Render `out.len()` samples.
+    pub fn set_environment(&mut self, settings: EnvironmentSettings) {
+        self.environment.set(settings);
+    }
+
+    /// Live/output render: the dry instrument through the selected stereo room.
+    pub fn render_stereo(&mut self, left: &mut [f32], right: &mut [f32]) {
+        assert_eq!(left.len(), right.len());
+        self.render(left);
+        self.environment.process(left, right);
+    }
+
+    /// Render `out.len()` dry mono samples (analysis and existing source fixtures).
     pub fn render(&mut self, out: &mut [f32]) {
         let mut i = 0;
         while i < out.len() {
