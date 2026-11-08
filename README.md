@@ -1,5 +1,10 @@
 # CHIMERA
 
+This [custom fork](https://github.com/Jacob19999/chimera-vocal-synth) assembles the upstream
+voice-realism work for spoken and sung voices. See [docs/realism-fork.md](docs/realism-fork.md)
+for the source branches, the additional sound change, and the current limits of matching a
+particular speaker or singer.
+
 A physical-modeling voice synthesizer in the browser. Every sound comes from a simulated
 airway (lungs, vocal folds or syrinx, a branched vocal tract, lips, nose), not from samples.
 The engine is Rust, compiled to WebAssembly for an AudioWorklet; the same code runs natively
