@@ -90,6 +90,54 @@ input {
   padding: 10px;
 }
 
+.s-environment > .screen-body {
+  padding: 14px 18px;
+}
+
+.environment-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+}
+
+.environment-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 140px;
+}
+
+.environment-choice select {
+  font: inherit;
+  color: var(--blue);
+  background: var(--black);
+  border: 1px solid var(--line);
+  padding: 6px 8px;
+  min-width: 0;
+}
+
+.environment-controls .slider {
+  flex: 1 1 150px;
+  min-width: 0;
+  max-width: 260px;
+}
+
+.environment-dimensions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--blue-mid);
+  font-size: 12px;
+}
+
+.environment-description {
+  flex: 1 1 200px;
+  margin: 0;
+  color: var(--blue-mid);
+  font-size: 12px;
+}
+
 /* ---------- top bar */
 .topbar {
   display: flex;

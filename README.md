@@ -19,6 +19,8 @@ for tests and the `chimera` CLI.
 - **Sing**: piano roll with lyrics per note; consonants land before the beat.
 - **Beatbox**: pads and a step sequencer, every drum an articulatory gesture.
 - **Bestiary**: songbird (two-voice syrinx), seal, alligator and elephant.
+- **Environment**: dry, studio, living room, concert hall, or cathedral; stereo reflections,
+  room mix, decay, and damping, shared by live playback and CLI renders.
 - **Duet** (`?show=<id>`): two 3D heads replay a pre-rendered song.
 
 Male, female and child bodies blend continuously. Everything on screen animates from live
@@ -41,6 +43,7 @@ Offline renders and measurement:
 
 ```sh
 cargo run --release -p chimera-cli -- render speech|text|song|notes|beatbox|creature|vowels …
+cargo run --release -p chimera-cli -- render text out/hall "Hello world." --environment hall
 cargo run --release -p chimera-cli -- diagnose       # nasal leakage, formants, bandwidths, pitch
 cargo run --release -p chimera-cli -- compare csd    # against a real singer (docs/csd-comparison.md)
 cargo run --release -p chimera-cli -- compare tsp    # against 23 real speakers (docs/speech-comparison.md)
@@ -51,6 +54,8 @@ bun tools/spectrogram.ts in.wav out.png
 
 - [docs/architecture.md](docs/architecture.md): the acoustic model (FDTD airway, sources,
   anatomy, gestures).
+- [docs/environments.md](docs/environments.md): room controls, stereo CLI renders, and the
+  selected pyroomacoustics routines ported to the shared Rust engine.
 - [docs/rust-engine.md](docs/rust-engine.md): the engine's real-time and determinism contract,
   and the browser boundary.
 - [docs/ui-redesign.md](docs/ui-redesign.md) and [docs/mockups/](docs/mockups/): the vector
@@ -68,4 +73,5 @@ Agents: see [AGENTS.md](AGENTS.md).
 
 [MIT](LICENSE). Bundled third-party files keep their own licenses: the CMU Pronouncing
 Dictionary ([public/data/CMUDICT-LICENSE.txt](public/data/CMUDICT-LICENSE.txt)) and the fonts
-([public/fonts/](public/fonts/)).
+([public/fonts/](public/fonts/)). The room model adapts MIT-licensed pyroomacoustics routines;
+their notices are in [public/data/PYROOMACOUSTICS-LICENSE.txt](public/data/PYROOMACOUSTICS-LICENSE.txt).

@@ -328,6 +328,10 @@ async function main() {
       await mode(m);
       await check(m);
     }
+    // The expanded environment controls must flow on phones as well as desktops.
+    await page.getByLabel("Space", { exact: true }).selectOption("hall");
+    await check("concert hall environment");
+    await page.getByLabel("Space", { exact: true }).selectOption("dry");
     await page.locator(".topbar button.primary").click();
     await page.waitForSelector(".load", { timeout: 15000 });
     for (const m of modes) {

@@ -10,7 +10,7 @@ etc. Tonal and percussive (beatboxing). Beautiful visuals/diagrams, dynamic anim
 params."
 
 **Not built (yet):** the design's wider bestiary (only songbird, seal, alligator and elephant
-exist), the two-mass vocal folds, an IPA chart mode, the app-side EQ/reverb/limiter chain and
+exist), the two-mass vocal folds, an IPA chart mode, the app-side EQ/limiter chain and
 in-app WAV export (the CLI renders WAVs; the app has a close-mic chain in WebAudio). Treat the
 code as the truth where this file disagrees.
 
@@ -136,6 +136,13 @@ branching (nasal tract, sinuses, piriform fossae, two bronchi, vocal sacs, OEC).
   syllables, final fall / question rise). Singing: notes+lyrics → syllable alignment.
 
 ## 5. FX / output
+
+The fork implements a shared stereo environment stage (studio, room, hall, cathedral) in
+Rust, after the dry voice/creature render. It combines geometry-based early reflections adapted
+from pyroomacoustics with an original diffused feedback reverberator. Live playback and CLI
+WAVs use the same processor; Dry remains an exact bypass. See [environments.md](environments.md).
+The browser's optional beatbox close-mic chain follows this stage. The wider chain below is
+still the original design, not the currently implemented output path:
 
 DC blocker → mic model (distance/proximity) → EQ → compressor → saturation → reverb →
 limiter. WAV export via the same engine in a Worker (unlimited voices, faster than RT).

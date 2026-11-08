@@ -9,6 +9,7 @@ import { BEAT_PRESETS, BASS_NOTE, beatReady, parseBeat, type BeatStep } from "..
 import { singNoteOn, singNoteOff, stopSinging, ensureDictionary } from "./singing.ts";
 import { stopSpeaking } from "./speech.ts";
 import { connectMidi, disconnectMidi, type MidiStatus } from "./midi.ts";
+import { ENVIRONMENTS, type EnvironmentSettings } from "../wasm/engine.ts";
 
 export type Mode = "play" | "speak" | "sing" | "bestiary" | "beatbox";
 
@@ -40,6 +41,8 @@ interface State {
   artic: HumanArtic;
   tipFree: boolean;
   volume: number;
+  environment: EnvironmentSettings;
+  setEnvironment: (settings: Partial<EnvironmentSettings>) => void;
   /** sustained breath (drone) independent of keys */
   hold: boolean;
   heldNotes: number[];
@@ -129,6 +132,15 @@ export const useStore = create<State>((set, get) => ({
   })(),
   tipFree: true,
   volume: 0.8,
+  environment: { preset: "dry", mix: ENVIRONMENTS[0].mix, decay: ENVIRONMENTS[0].decay, damping: ENVIRONMENTS[0].damping },
+  setEnvironment: (values) => {
+    const previous = get().environment;
+    const preset = ENVIRONMENTS.find((p) => p.id === values.preset);
+    const base = preset && preset.id !== previous.preset ? { preset: preset.id, mix: preset.mix, decay: preset.decay, damping: preset.damping } : previous;
+    const environment = { ...base, ...values };
+    set({ environment });
+    engine.setEnvironment(environment);
+  },
   hold: false,
   heldNotes: [],
   view: { pressure: true, particles: true, grid: false, calipers: true, threeD: false },
@@ -245,6 +257,7 @@ export const useStore = create<State>((set, get) => ({
         // anything set before audio existed was not delivered: send the whole state now
         const s = get();
         engine.setVolume(s.volume);
+        engine.setEnvironment(s.environment);
         if (!sameBody(s.body, PRESETS.male)) engine.setBody(s.body);
         engine.setSource(s.source);
         engine.setArtic(s.artic, s.tipFree);

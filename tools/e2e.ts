@@ -197,8 +197,39 @@ async function run(viewport: { width: number; height: number }, tag: string) {
 
 await run({ width: 1440, height: 980 }, "desktop");
 await run({ width: 390, height: 844 }, "mobile");
+
+// A room selected before audio starts survives startup, rings after the voice stops,
+// and can be bypassed live. Measure the output analyser, not the dry voice telemetry.
+{
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  page.on("pageerror", (e) => errors.push(`[environment] pageerror: ${e.message}`));
+  await page.goto(url, { waitUntil: "networkidle" });
+  await page.getByLabel("Space", { exact: true }).selectOption("hall");
+  await page.getByRole("button", { name: /breathe in and start/i }).click();
+  await page.waitForTimeout(900);
+  await page.evaluate(() => {
+    // @ts-expect-error debug handle
+    window.__chimeraEngine.gate(0);
+  });
+  await page.waitForTimeout(500);
+  const rms = () => page.evaluate(() => {
+    // @ts-expect-error debug handle
+    const analyser = window.__chimeraEngine.analyserFast as AnalyserNode;
+    const samples = new Float32Array(analyser.fftSize);
+    analyser.getFloatTimeDomainData(samples);
+    return Math.sqrt(samples.reduce((sum, x) => sum + x * x, 0) / samples.length);
+  });
+  const wet = await rms();
+  await page.screenshot({ path: `${outDir}/environment-hall.png`, fullPage: true });
+  await page.getByLabel("Space", { exact: true }).selectOption("dry");
+  await page.waitForTimeout(180);
+  const dry = await rms();
+  logs.push(`[environment] room tail rms ${wet.toFixed(6)}, bypass ${dry.toFixed(6)}`);
+  if (!(wet > 1e-5 && dry < wet * 0.1)) errors.push(`[environment] missing tail or bypass: wet ${wet}, dry ${dry}`);
+  await page.close();
+}
 await browser.close();
 console.log("console errors:", errors.length ? "\n" + errors.join("\n") : "none");
-console.log(logs.filter((l) => /load|warn|transcription|creature|held|back to|beatbox|silence|sing/i.test(l)).slice(0, 40).join("\n"));
+console.log(logs.filter((l) => /load|warn|transcription|creature|held|back to|beatbox|silence|sing|environment/i.test(l)).slice(0, 40).join("\n"));
 // a run that collected errors fails, so CI and agents can't read it as a pass
 if (errors.length) process.exit(1);
