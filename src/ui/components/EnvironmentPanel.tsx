@@ -13,7 +13,7 @@ export function EnvironmentPanel() {
   const dry = settings.preset === "dry";
   const percent = (v: number) => `${Math.round(v * 100)} %`;
   return (
-    <Screen title="Environment" sub="The space around the voice" className="s-environment">
+    <Screen title="Environment" sub="Shared listening space" className="s-environment">
       <div className="environment-controls">
         <div className="environment-choice">
           <label htmlFor={spaceId}>Space</label>
@@ -21,7 +21,7 @@ export function EnvironmentPanel() {
             {ENVIRONMENTS.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
           </select>
         </div>
-        {dry ? <p className="environment-description">The voice alone, without room reflections.</p> : <>
+        {dry ? <p className="environment-description">Dry sound without room reflections.</p> : <>
           <div className="environment-dimensions">
             <span>{preset.dimensions.join(" × ")} m</span>
             <span>Stereo reflections</span>

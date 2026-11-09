@@ -121,7 +121,8 @@ export function lyricsToSyllables(text: string): Syllable[] {
 }
 
 export interface ScoreNote { midi: number; start: number; end: number; syl: Syllable }
-export interface ScoreTrack { name: string; notes: ScoreNote[]; end: number }
+export type ScoreTempoMark = [beat: number, seconds: number, secondsPerBeat: number];
+export interface ScoreTrack { name: string; notes: ScoreNote[]; end: number; tempo: ScoreTempoMark[] }
 
 export function importScore(source: { xml: string } | { mxl: string }, ipa?: string): ScoreTrack[] {
   return call("importScore", { ...source, ipa });

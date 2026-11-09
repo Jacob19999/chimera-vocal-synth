@@ -30,6 +30,8 @@ pub struct Note {
 pub struct Score {
     pub notes: Vec<Note>,
     pub end: f64,
+    /// (Quarter-note position, elapsed seconds, seconds per quarter note).
+    pub tempo: Vec<(f64, f64, f64)>,
 }
 
 type Xml<'a, 'i> = Node<'a, 'i>;
@@ -215,7 +217,11 @@ pub fn parse(xml: &str, select: &Selection<'_>) -> Result<Score, String> {
     if notes.is_empty() {
         return Err("the selected voice has no pitched notes".into());
     }
-    let seconds = tempo_clock(tempos, select.bpm.unwrap_or(120.0));
+    let tempo = tempo_clock(tempos, select.bpm.unwrap_or(120.0));
+    let seconds = |beat: f64| {
+        let (last, at, rate) = tempo[tempo.partition_point(|mark| mark.0 <= beat) - 1];
+        at + (beat - last) * rate
+    };
     let end = seconds(end);
     if !end.is_finite() || end > MAX_SECONDS {
         return Err(format!(
@@ -229,7 +235,7 @@ pub fn parse(xml: &str, select: &Selection<'_>) -> Result<Score, String> {
             return Err("a pitched note has an invalid duration or lasts less than 20 ms".into());
         }
     }
-    Ok(Score { notes, end })
+    Ok(Score { notes, end, tempo })
 }
 
 fn pitch(n: Xml<'_, '_>) -> Result<f64, String> {
@@ -435,17 +441,19 @@ fn read_part(
     Ok((notes, tempos, measure_start))
 }
 
-fn tempo_clock(mut tempos: Vec<Tempo>, default_bpm: f64) -> impl Fn(f64) -> f64 {
+fn tempo_clock(mut tempos: Vec<Tempo>, default_bpm: f64) -> Vec<(f64, f64, f64)> {
     tempos.sort_by(|a, b| a.0.total_cmp(&b.0));
     let mut marks = vec![(0.0, 0.0, 60.0 / default_bpm)];
     for (beat, bpm) in tempos {
-        let &(last, at, rate) = marks.last().unwrap();
-        marks.push((beat, at + (beat - last) * rate, 60.0 / bpm));
+        let mark = marks.last_mut().unwrap();
+        let (last, at, rate) = *mark;
+        if beat == last {
+            mark.2 = 60.0 / bpm;
+        } else {
+            marks.push((beat, at + (beat - last) * rate, 60.0 / bpm));
+        }
     }
-    move |beat| {
-        let (last, at, rate) = marks[marks.partition_point(|mark| mark.0 <= beat) - 1];
-        at + (beat - last) * rate
-    }
+    marks
 }
 
 const GAP_EPSILON: f64 = 1e-6;

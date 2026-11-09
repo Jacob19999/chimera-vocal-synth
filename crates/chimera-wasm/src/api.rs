@@ -193,7 +193,7 @@ fn import_score(req: &Value, g2p: &EnglishG2P) -> Res {
         let notes = score.notes.iter().zip(syl).map(|(note, syl)| json!({
             "midi": note.midi, "start": note.start, "end": note.end, "syl": syl,
         })).collect::<Vec<_>>();
-        tracks.push(json!({ "name": name, "notes": notes, "end": score.end }));
+        tracks.push(json!({ "name": name, "notes": notes, "end": score.end, "tempo": score.tempo }));
     }
     Ok(Value::Array(tracks))
 }

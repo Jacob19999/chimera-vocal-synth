@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useStore } from "../store.ts";
-import { useSing, playDemo, stopSinging, soundingSyllable, sungNow, DEMO_SONGS, loadScore, playScore, type LoadedScore } from "../singing.ts";
+import { useSing, playDemo, stopSinging, soundingSyllable, sungNow, DEMO_SONGS, loadScore, playScore, type LoadedScore, type OrchestraPlayback } from "../singing.ts";
 import { mouthWords } from "../mouthWords.ts";
 import { V } from "../colors.ts";
 import { PRESETS } from "../body.ts";
@@ -210,7 +210,7 @@ export function loadMozart(): void {
   loadScore({ title: MOZART, tracks: importScore({ xml: mozart }, mozartIpa) });
 }
 
-export function ScoreControls({ duetOnly = false }: { duetOnly?: boolean }) {
+export function ScoreControls({ duetOnly = false, orchestra, orchestraError }: { duetOnly?: boolean; orchestra?: OrchestraPlayback; orchestraError?: string }) {
   const score = useSing((s) => s.score);
   const demo = useSing((s) => s.demo);
   const starting = useStore((s) => s.starting);
@@ -263,7 +263,7 @@ export function ScoreControls({ duetOnly = false }: { duetOnly?: boolean }) {
         <>
           <div className="score-heading">
             <strong>{score.title}</strong>
-            <Chip toggle={false} disabled={starting || busy} onClick={async () => {
+            <Chip toggle={false} disabled={starting || busy || (!playing && !!orchestraError)} onClick={async () => {
               if (playing) return stopSinging();
               setError("");
               const state = useStore.getState();
@@ -273,11 +273,11 @@ export function ScoreControls({ duetOnly = false }: { duetOnly?: boolean }) {
                 await playScore(score, body, async () => {
                   await state.start();
                   if (!useStore.getState().started) throw new Error(useStore.getState().startError ?? "Audio could not start.");
-                });
+                }, orchestra);
               } catch (e) {
                 setError(e instanceof Error ? e.message : String(e));
               }
-            }}>{playing ? "Stop score" : score.tracks.length === 2 ? "Play duet" : "Play score"}</Chip>
+            }}>{playing ? "Stop score" : orchestra ? "Play duet + orchestra" : score.tracks.length === 2 ? "Play duet" : "Play score"}</Chip>
           </div>
           <ScoreLyrics score={score} />
         </>

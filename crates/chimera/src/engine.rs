@@ -218,6 +218,11 @@ impl Engine {
     pub fn render_stereo(&mut self, left: &mut [f32], right: &mut [f32]) {
         assert_eq!(left.len(), right.len());
         self.render(left);
+        self.apply_environment(left, right);
+    }
+
+    /// Route an external dry mono mix through this engine's stereo room.
+    pub fn apply_environment(&mut self, left: &mut [f32], right: &mut [f32]) {
         self.environment.process(left, right);
     }
 

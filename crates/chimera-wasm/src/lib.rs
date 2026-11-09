@@ -183,7 +183,27 @@ pub unsafe extern "C" fn engine_render(h: *mut Handle, n: usize) -> *const f32 {
     h.out.as_ptr()
 }
 
-/// Right channel of the most recent `engine_render`, with the same frame count.
+/// Render dry mono into the output buffer, which the caller may mix into before applying the room.
+/// # Safety
+/// `h` must be a live handle.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn engine_render_dry(h: *mut Handle, n: usize) -> *mut f32 {
+    let h = handle!(h);
+    h.engine.render(&mut h.out[..n.min(MAX_RENDER)]);
+    h.out.as_mut_ptr()
+}
+
+/// Apply the room to the mixed dry buffer in place and write the right output channel.
+/// # Safety
+/// `h` must be a live handle.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn engine_apply_environment(h: *mut Handle, n: usize) {
+    let h = handle!(h);
+    let n = n.min(MAX_RENDER);
+    h.engine.apply_environment(&mut h.out[..n], &mut h.out_right[..n]);
+}
+
+/// Right channel of the most recent stereo render, with the same frame count.
 /// # Safety
 /// `h` must be a live handle.
 #[unsafe(no_mangle)]

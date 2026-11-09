@@ -6,6 +6,7 @@ import type { Gesture } from "../wasm/types.ts";
 import type { CreatureTelemetry } from "../wasm/types.ts";
 import type { BeatStep, BodyMix } from "../wasm/types.ts";
 import type { EnvironmentSettings } from "../wasm/types.ts";
+import type { OrchestraCue, TrackMix } from "../audio/orchestra.ts";
 
 export interface PhraseMsg {
   segments: Segment[];
@@ -27,7 +28,8 @@ export type ToWorklet =
   | { type: "gate"; level: number }
   | { type: "telemetry"; enabled: boolean }
   /** gestures planned on the main thread with times relative to "now" (the worklet adds its clock) */
-  | { type: "schedule"; gestures: Gesture[]; segments: PlannedSegment[]; end: number; id: number; replace: boolean; lead?: number; harmony?: HarmonyPlan }
+  | { type: "schedule"; gestures: Gesture[]; segments: PlannedSegment[]; end: number; id: number; replace: boolean; lead?: number; harmony?: HarmonyPlan; orchestra?: OrchestraCue }
+  | { type: "orchestraMix"; mix: TrackMix[] }
   | { type: "stopSpeech" }
   /** switch the active voice: "human" or a creature id */
   | { type: "creature"; id: string; params?: Record<string, number> }

@@ -10,6 +10,7 @@ import { writeGestures, writeSteps, fromUtf8, utf8, CONTROL_KEYS } from "../wasm
 import type { ToWorklet, FromWorklet, TelemetryMessage } from "./protocol.ts";
 import { MAX_GESTURES } from "./protocol.ts";
 import type { BodyMix, CreatureTelemetry, EnvironmentSettings } from "../wasm/types.ts";
+import { OrchestraSynth } from "./orchestra.ts";
 
 // Minimal AudioWorkletGlobalScope typings
 declare const sampleRate: number;
@@ -47,6 +48,8 @@ class ChimeraProcessor extends AudioWorkletProcessor {
   private creature: CreatureInfo | null = null;
   private environment: EnvironmentSettings | undefined;
   private harmony: { handle: number; end: number } | undefined;
+  private orchestra: OrchestraSynth | undefined;
+  private sharedRoom = false;
 
   constructor(options: { processorOptions: { module: WebAssembly.Module } }) {
     super();
@@ -108,10 +111,11 @@ class ChimeraProcessor extends AudioWorkletProcessor {
     this.x.engine_set_environment(h, Math.max(0, ROOMS.indexOf(s.preset)), s.mix, s.decay, s.damping);
   }
 
-  private clearHarmony(): void {
-    if (!this.harmony) return;
-    this.x.engine_free(this.harmony.handle);
+  private clearAccompaniment(): void {
+    if (this.harmony) this.x.engine_free(this.harmony.handle);
     this.harmony = undefined;
+    this.orchestra = undefined;
+    this.sharedRoom = false;
   }
 
   private handle(m: ToWorklet): void {
@@ -124,7 +128,7 @@ class ChimeraProcessor extends AudioWorkletProcessor {
         break;
       }
       case "body":
-        this.clearHarmony();
+        this.clearAccompaniment();
         x.engine_set_body(h, m.body.female, m.body.child);
         this.postReady();
         break;
@@ -154,7 +158,7 @@ class ChimeraProcessor extends AudioWorkletProcessor {
         break;
       case "schedule": {
         // planning happened on the main thread; the engine shifts the gestures onto its clock
-        if (m.replace) this.clearHarmony();
+        if (m.replace) this.clearAccompaniment();
         const lead = m.lead ?? 0.03;
         const n = writeGestures(this.mem, x.engine_records(h), m.gestures, MAX_GESTURES);
         const off = x.engine_schedule(h, n, lead, m.replace ? 1 : 0);
@@ -168,11 +172,18 @@ class ChimeraProcessor extends AudioWorkletProcessor {
           const count = writeGestures(this.mem, x.engine_records(voice), m.harmony.gestures, MAX_GESTURES);
           x.engine_schedule(voice, count, lead, 1);
         }
-        if (m.segments.length) this.post({ type: "planned", id: m.id, t0: off, end: m.end + off, segments: m.segments.map((s) => ({ ...s, t0: s.t0 + off, t1: s.t1 + off })) });
+        if (m.replace && m.orchestra?.notes.length) {
+          this.orchestra = new OrchestraSynth(m.orchestra, sampleRate, lead);
+          this.sharedRoom = true;
+        }
+        if (m.segments.length || m.orchestra) this.post({ type: "planned", id: m.id, t0: off, end: m.end + off, segments: m.segments.map((s) => ({ ...s, t0: s.t0 + off, t1: s.t1 + off })) });
         break;
       }
+      case "orchestraMix":
+        this.orchestra?.setMix(m.mix);
+        break;
       case "stopSpeech":
-        this.clearHarmony();
+        this.clearAccompaniment();
         x.engine_stop_speech(h);
         break;
       case "release":
@@ -188,7 +199,7 @@ class ChimeraProcessor extends AudioWorkletProcessor {
         x.engine_beat_hit(h);
         break;
       case "creature":
-        this.clearHarmony();
+        this.clearAccompaniment();
         this.creature = m.id === "human" ? (x.engine_set_human(h), null) : this.engineJson<CreatureInfo>("engine_set_creature", { id: m.id, params: m.params ?? {} });
         this.postReady();
         break;
@@ -223,18 +234,34 @@ class ChimeraProcessor extends AudioWorkletProcessor {
     const t0 = Date.now();
     let harmonyHandle: number | undefined;
     try {
-      const p = this.x.engine_render(this.h, ch0.length);
-      ch0.set(new Float32Array(this.mem, p, ch0.length));
-      for (let c = 1; c < out.length; c++) out[c].set(new Float32Array(this.mem, this.x.engine_output_right(this.h), ch0.length));
+      const x = this.x, h = this.h, n = ch0.length;
+      const p = this.sharedRoom ? x.engine_render_dry(h, n) : x.engine_render(h, n);
       const room = this.environment;
       // Leave room for the planner's release and the room's decay, then stop spending CPU
       // on the extra voice. Allocation and disposal happen in message handlers.
       const tail = room && room.preset !== "dry" && room.mix > 0 ? 1.5 * room.decay + 0.75 : 0;
-      if (this.harmony && this.x.engine_clock(this.h) < this.harmony.end + 0.4 + tail) {
-        const voice = this.harmony.handle;
-        harmonyHandle = voice;
-        const left = this.x.engine_render(voice, ch0.length);
-        const right = this.x.engine_output_right(voice);
+      if (this.harmony && x.engine_clock(h) < this.harmony.end + 0.4 + tail) harmonyHandle = this.harmony.handle;
+      if (this.sharedRoom) {
+        const dry = new Float32Array(this.mem, p, n);
+        if (harmonyHandle !== undefined) {
+          const other = new Float32Array(this.mem, x.engine_render_dry(harmonyHandle, n), n);
+          for (let i = 0; i < n; i++) dry[i] = 0.5 * (dry[i] + other[i]);
+        }
+        if (this.orchestra) {
+          if (!this.orchestra.addTo(dry)) this.orchestra = undefined;
+          // Leave room for coincident orchestral attacks without clipping the dry bus.
+          for (let i = 0; i < n; i++) {
+            const peak = Math.abs(dry[i]);
+            if (peak > 0.8) dry[i] = Math.sign(dry[i]) * (1 - 0.04 / (peak - 0.6));
+          }
+        }
+        x.engine_apply_environment(h, n);
+      }
+      ch0.set(new Float32Array(this.mem, p, n));
+      for (let c = 1; c < out.length; c++) out[c].set(new Float32Array(this.mem, x.engine_output_right(h), n));
+      if (!this.sharedRoom && harmonyHandle !== undefined) {
+        const left = x.engine_render(harmonyHandle, n);
+        const right = x.engine_output_right(harmonyHandle);
         for (let c = 0; c < out.length; c++) {
           const other = new Float32Array(this.mem, c === 0 ? left : right, ch0.length);
           for (let i = 0; i < other.length; i++) out[c][i] = 0.5 * (out[c][i] + other[i]);

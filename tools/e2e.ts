@@ -5,6 +5,7 @@
  */
 import { chromium } from "playwright-core";
 import { mkdirSync } from "node:fs";
+import { writeMidi, type MidiEvent } from "midi-file";
 
 const url = process.argv[2] ?? "http://127.0.0.1:5318/";
 const outDir = process.argv[3] ?? "out/e2e";
@@ -228,8 +229,61 @@ await run({ width: 390, height: 844 }, "mobile");
   if (!(wet > 1e-5 && dry < wet * 0.1)) errors.push(`[environment] missing tail or bypass: wet ${wet}, dry ${dry}`);
   await page.close();
 }
+
+// Import the same generated accompaniment on desktop and mobile. The MIDI mixer and canvas
+// should stay in the Opera layout while the duet and orchestra share a running transport.
+for (const width of [1280, 390]) {
+  const page = await browser.newPage({ viewport: { width, height: 900 } });
+  page.on("pageerror", (e) => errors.push(`[orchestra-${width}] pageerror: ${e.message}`));
+  page.on("console", (m) => {
+    if (m.type() === "error") errors.push(`[orchestra-${width}] ${m.text()}`);
+  });
+  await page.goto(url, { waitUntil: "networkidle" });
+  await page.getByRole("radio", { name: "Opera", exact: true }).click();
+  const track = (text: string, channel: number, programNumber: number, noteNumber: number): MidiEvent[] => [
+    { type: "trackName", deltaTime: 0, text },
+    { type: "programChange", deltaTime: 0, channel, programNumber },
+    { type: "noteOn", deltaTime: 0, channel, noteNumber, velocity: 105 },
+    { type: "noteOff", deltaTime: 1920, channel, noteNumber, velocity: 0 },
+    { type: "noteOn", deltaTime: 240, channel, noteNumber: noteNumber + 5, velocity: 100 },
+    { type: "noteOff", deltaTime: 960, channel, noteNumber: noteNumber + 5, velocity: 0 },
+    { type: "endOfTrack", deltaTime: 0 },
+  ];
+  const bytes = writeMidi({
+    header: { format: 1, numTracks: 2, ticksPerBeat: 480 },
+    tracks: [track("Strings", 0, 40, 69), track("Winds", 1, 73, 77)],
+  });
+  await page.getByLabel("Orchestra MIDI file").setInputFiles({ name: "accompaniment.mid", mimeType: "audio/midi", buffer: Buffer.from(bytes) });
+  await page.getByRole("img", { name: "Orchestra MIDI falling notes and piano keyboard" }).waitFor();
+  await page.getByLabel("Instrument for Winds").selectOption("Oboe");
+  await page.getByLabel("Level for Strings").press("Home");
+  await page.getByLabel("Level for Strings").press("ArrowRight");
+  await page.getByLabel(/MIDI offset/).fill("0.25");
+  await page.getByLabel(/MIDI offset/).press("Enter");
+  await page.screenshot({ path: `${outDir}/orchestra-${width}.png`, fullPage: true });
+  await page.getByRole("button", { name: "Play duet + orchestra", exact: true }).click();
+  await page.getByRole("button", { name: "Stop score", exact: true }).waitFor();
+  await page.waitForFunction(() => {
+    // @ts-expect-error debug handle
+    return !!window.__chimeraEngine?.latest?.harmony;
+  });
+  await page.getByRole("button", { name: "Solo Winds", exact: true }).click();
+  if (await page.getByRole("button", { name: "Solo Winds", exact: true }).getAttribute("aria-pressed") !== "true") {
+    errors.push(`[orchestra-${width}] solo did not latch`);
+  }
+  const stage = page.getByLabel("Live duet stage");
+  if (await stage.getByRole("region").count() !== 2) errors.push(`[orchestra-${width}] missing a duet face`);
+  if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1)) {
+    errors.push(`[orchestra-${width}] page overflows horizontally`);
+  }
+  await page.getByRole("button", { name: "Stop score", exact: true }).click();
+  await page.getByRole("button", { name: "Remove MIDI", exact: true }).click();
+  await page.getByRole("button", { name: "Play duet", exact: true }).waitFor();
+  logs.push(`[orchestra-${width}] imported, mixed, played and removed two instrument tracks`);
+  await page.close();
+}
 await browser.close();
 console.log("console errors:", errors.length ? "\n" + errors.join("\n") : "none");
-console.log(logs.filter((l) => /load|warn|transcription|creature|held|back to|beatbox|silence|sing|environment/i.test(l)).slice(0, 40).join("\n"));
+console.log(logs.filter((l) => /load|warn|transcription|creature|held|back to|beatbox|silence|sing|environment|orchestra/i.test(l)).slice(0, 40).join("\n"));
 // a run that collected errors fails, so CI and agents can't read it as a pass
 if (errors.length) process.exit(1);

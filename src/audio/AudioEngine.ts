@@ -10,6 +10,7 @@ import type { HumanArtic } from "../wasm/types.ts";
 import type { VoiceSource } from "../wasm/types.ts";
 import type { EnvironmentSettings } from "../wasm/types.ts";
 import type { HarmonyPlan } from "../worklet/protocol.ts";
+import type { OrchestraCue, TrackMix } from "./orchestra.ts";
 
 type Listener = (t: TelemetryMessage) => void;
 
@@ -142,10 +143,14 @@ export class AudioEngine {
   }
 
   /** Send a gestural plan (times relative to now). Returns the request id. */
-  schedule(plan: { gestures: import("../wasm/types.ts").Gesture[]; segments: import("../wasm/types.ts").PlannedSegment[]; end: number }, replace = true, harmony?: HarmonyPlan): number {
+  schedule(plan: { gestures: import("../wasm/types.ts").Gesture[]; segments: import("../wasm/types.ts").PlannedSegment[]; end: number }, replace = true, harmony?: HarmonyPlan, orchestra?: OrchestraCue): number {
     const id = ++this.speakId;
-    this.send({ type: "schedule", gestures: plan.gestures, segments: plan.segments, end: plan.end, id, replace, harmony });
+    this.send({ type: "schedule", gestures: plan.gestures, segments: plan.segments, end: plan.end, id, replace, harmony, orchestra });
     return id;
+  }
+
+  setOrchestraMix(mix: TrackMix[]): void {
+    this.send({ type: "orchestraMix", mix });
   }
 
   /** Switch voice ("human" or a creature id), starting the creature from the given settings. */

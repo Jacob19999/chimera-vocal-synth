@@ -16,8 +16,10 @@ import { DEMO_SONGS } from "../wasm/engine.ts";
 import type { Gesture, Plan, SungNote } from "../wasm/types.ts";
 import { nearestBody, PRESETS, type BodyMix } from "./body.ts";
 import { MAX_GESTURES } from "../worklet/protocol.ts";
+import type { OrchestraCue, OrchestraPlan, TrackMix } from "../audio/orchestra.ts";
 
 export interface LoadedScore { title: string; tracks: ScoreTrack[] }
+export interface OrchestraPlayback { plan: OrchestraPlan; mix: () => TrackMix[] }
 const SCORE_LEAD = 0.35;
 const SCORE_GAP = 1e-6;
 
@@ -318,7 +320,7 @@ export function loadScore(score: LoadedScore | null): void {
   useSing.setState({ score });
 }
 
-export async function playScore(score: LoadedScore, body: BodyMix, ready: () => Promise<void>): Promise<void> {
+export async function playScore(score: LoadedScore, body: BodyMix, ready: () => Promise<void>, orchestra?: OrchestraPlayback): Promise<void> {
   stopSinging();
   const token = demoToken;
   await ready();
@@ -331,18 +333,24 @@ export async function playScore(score: LoadedScore, body: BodyMix, ready: () => 
   const harmonyPlan = harmony ? planTrack(harmonyNotes, PRESETS.female, vibrato) : undefined;
   const plan = planTrack(notes, body, vibrato);
   // Keep the shared score clock running through written rests, including its final bars.
-  plan.end = Math.max(plan.end, lead.end + SCORE_LEAD, (harmony?.end ?? 0) + SCORE_LEAD);
-  queueSong(score.title, notes, plan, harmonyNotes, harmonyPlan);
+  plan.end = Math.max(plan.end, lead.end + SCORE_LEAD, (harmony?.end ?? 0) + SCORE_LEAD, (orchestra?.plan.end ?? 0) + SCORE_LEAD);
+  const cue = orchestra ? { notes: orchestra.plan.notes, delay: SCORE_LEAD, mix: orchestra.mix() } : undefined;
+  queueSong(score.title, notes, plan, harmonyNotes, harmonyPlan, cue);
 }
 
-function queueSong(name: string, notes: ScoreNote[], plan: Plan, harmonyNotes: ScoreNote[] = [], harmonyPlan?: Plan): void {
+function queueSong(name: string, notes: ScoreNote[], plan: Plan, harmonyNotes: ScoreNote[] = [], harmonyPlan?: Plan, orchestra?: OrchestraCue): void {
   const end = Math.max(plan.end, harmonyPlan?.end ?? 0);
-  const id = engine.schedule({ ...plan, end }, true, harmonyPlan ? { ...harmonyPlan, body: PRESETS.female } : undefined);
+  const id = engine.schedule({ ...plan, end }, true, harmonyPlan ? { ...harmonyPlan, body: PRESETS.female } : undefined, orchestra);
   const parent: number[] = [];
   notes.forEach((n, i) => parent.push(n.syl.melisma && i > 0 ? parent[i - 1] : i));
   const shown = parent.map((p) => written(notes[p].syl));
   demoRun = { id, notes, harmonyNotes, shown, parent, end, offset: null };
   useSing.setState({ demo: name, demoAt: -1, harmonyAt: -1 });
+}
+
+/** Score-relative time for the Opera waterfall, with zero at the first written beat. */
+export function scoreTime(): number | null {
+  return demoRun?.offset == null ? null : now() - demoRun.offset - SCORE_LEAD;
 }
 
 function noteAt(notes: ScoreNote[], t: number): number {
