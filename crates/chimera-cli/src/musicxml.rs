@@ -1,21 +1,17 @@
 //! Import a MusicXML vocal line and sing it, optionally on a recording's timeline.
 mod reference;
-mod score;
 
 use self::reference::Reference;
-use self::score::{Note, Score, Selection};
+use chimera_score::{self as score, Score, Selection, connected};
 use crate::{Ctx, FS, peak, render, wav_name};
 use chimera::anatomy::human::BodyMix;
 use chimera::control::score::{ControlKey, GestureScore};
 use chimera::math::midi_to_hz;
-use chimera::phonetics::ipa::tokenize_ipa;
 use chimera::phonetics::sing::{SongOptions, SungNote, plan_song};
-use chimera::phonetics::syllables::{lyrics_to_syllables, syllabify_segments};
-use chimera::phonetics::{Segment, Syllable};
+use chimera::phonetics::Syllable;
 use chimera::voice::human_voice::SourcePatch;
 
 const LEAD: f64 = 0.3;
-const GAP_EPSILON: f64 = 1e-6;
 
 #[derive(Default)]
 struct Options<'a> {
@@ -62,141 +58,6 @@ fn arguments(args: &[String]) -> Result<(&str, &str, &str, Options<'_>), String>
         _ => return Err("render musicxml <score.musicxml|score.mxl> <out> [male|female|child]; see chimera help".into()),
     };
     Ok((input, output, body, options))
-}
-
-fn extend(previous: &Syllable) -> Syllable {
-    Syllable {
-        text: "~".into(),
-        onset: Vec::new(),
-        nucleus: previous.nucleus.clone(),
-        coda: Vec::new(),
-        melisma: Some(true),
-        word_end: previous.word_end,
-        phrase_end: false,
-    }
-}
-
-fn connected(previous: &Note, next: &Note) -> bool {
-    next.start <= previous.end + GAP_EPSILON
-}
-
-fn ipa_syllables(notes: &[Note], path: &str) -> Result<Vec<Syllable>, String> {
-    let ipa = std::fs::read_to_string(path).map_err(|e| format!("{path}: {e}"))?;
-    let tokens: Vec<_> = ipa.split_whitespace().collect();
-    if tokens.len() != notes.len() {
-        return Err(format!(
-            "{path}: {} IPA syllables for {} sounding notes (ties count once)",
-            tokens.len(),
-            notes.len()
-        ));
-    }
-    let mut out = Vec::new();
-    for (i, token) in tokens.into_iter().enumerate() {
-        let syl = if token == "~" {
-            let prev = out
-                .last()
-                .filter(|_| connected(&notes[i - 1], &notes[i]))
-                .ok_or_else(|| {
-                    format!(
-                        "{path}: melisma on note {} needs a preceding syllable in the same phrase",
-                        i + 1
-                    )
-                })?;
-            extend(prev)
-        } else {
-            let mut parts = syllabify_segments(&tokenize_ipa(token));
-            if parts.len() != 1 {
-                return Err(format!(
-                    "{path}: note {} needs exactly one IPA syllable, got {token:?}",
-                    i + 1
-                ));
-            }
-            let part = parts.pop().unwrap();
-            Syllable {
-                text: notes[i].lyric.clone(),
-                onset: part.onset,
-                nucleus: part.nucleus,
-                coda: part.coda,
-                melisma: None,
-                word_end: true,
-                phrase_end: false,
-            }
-        };
-        out.push(syl);
-    }
-    Ok(out)
-}
-
-fn score_syllables(notes: &[Note]) -> Result<Vec<Syllable>, String> {
-    if let Some(lang) = notes
-        .iter()
-        .filter_map(|n| n.language.as_deref())
-        .find(|lang| {
-            !lang.is_empty() && !lang.split('-').next().unwrap().eq_ignore_ascii_case("en")
-        })
-    {
-        return Err(format!(
-            "MusicXML lyrics are marked {lang:?}; supply --ipa for non-English pronunciation"
-        ));
-    }
-    let g2p = render::g2p()?;
-    let mut out = vec![None::<Syllable>; notes.len()];
-    let mut word = String::new();
-    let mut positions = Vec::new();
-    for (i, note) in notes
-        .iter()
-        .enumerate()
-        .filter(|(_, n)| !n.lyric.is_empty())
-    {
-        word.push_str(&note.lyric);
-        positions.push(i);
-        if matches!(note.syllabic.as_str(), "begin" | "middle") {
-            continue;
-        }
-        let syllables = lyrics_to_syllables(&word, &g2p);
-        if syllables.len() != positions.len() {
-            return Err(format!(
-                "MusicXML lyric {word:?} has {} written syllables but English pronunciation yields {}; supply --ipa",
-                positions.len(),
-                syllables.len()
-            ));
-        }
-        for (pos, mut syl) in positions.drain(..).zip(syllables) {
-            syl.text.clone_from(&notes[pos].lyric);
-            out[pos] = Some(syl);
-        }
-        word.clear();
-    }
-    if !positions.is_empty() {
-        return Err(format!(
-            "MusicXML ends in an unfinished lyric {word:?}; supply --ipa"
-        ));
-    }
-    let mut syllables = Vec::with_capacity(notes.len());
-    for (i, syl) in out.into_iter().enumerate() {
-        let syl = syl.unwrap_or_else(|| {
-            syllables
-                .last()
-                .filter(|_| connected(&notes[i - 1], &notes[i]))
-                .map_or_else(
-                    || Syllable {
-                        text: "ɑ".into(),
-                        onset: Vec::new(),
-                        nucleus: Segment {
-                            ipa: "ɑ".into(),
-                            ..Default::default()
-                        },
-                        coda: Vec::new(),
-                        melisma: None,
-                        word_end: true,
-                        phrase_end: false,
-                    },
-                    extend,
-                )
-        });
-        syllables.push(syl);
-    }
-    Ok(syllables)
 }
 
 fn synthesize(
@@ -286,10 +147,16 @@ pub(crate) fn run(ctx: &Ctx, args: &[String]) -> Result<(), String> {
     {
         return Err("output WAV would overwrite an input".into());
     }
-    let mut score = score::load(input, &options.selection)?;
+    let file = std::fs::File::open(input).map_err(|e| format!("{input}: {e}"))?;
+    let xml = score::decode(file, input.to_ascii_lowercase().ends_with(".mxl"))
+        .map_err(|e| format!("{input}: {e}"))?;
+    let mut score = score::parse(&xml, &options.selection).map_err(|e| format!("{input}: {e}"))?;
     let syllables = match options.ipa {
-        Some(path) => ipa_syllables(&score.notes, path)?,
-        None => score_syllables(&score.notes)?,
+        Some(path) => {
+            let ipa = std::fs::read_to_string(path).map_err(|e| format!("{path}: {e}"))?;
+            score::ipa_syllables(&score.notes, &ipa).map_err(|e| format!("{path}: {e}"))?
+        }
+        None => score::score_syllables(&score.notes, &render::g2p()?)?,
     };
     let note_count = score.notes.len();
     let reference = if let Some(path) = options.reference {

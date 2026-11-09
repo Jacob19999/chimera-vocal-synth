@@ -11,5 +11,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 chimera = { path = "../chimera" }
+chimera-score = { path = "../chimera-score" }
+base64 = "0.22"
 serde = "1"
 serde_json = { version = "1", features = ["float_roundtrip", "preserve_order"] }

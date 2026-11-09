@@ -1,5 +1,5 @@
 //! Match a solo recording to a score by segmenting its pitch track in written note order.
-use super::score::{MAX_SECONDS, Note};
+use chimera_score::{MAX_SECONDS, Note};
 use chimera::analysis::pitch::{YinOpts, yin_pitch};
 use chimera::math::midi_to_hz;
 use std::ops::Range;

@@ -9,6 +9,7 @@ import type { BodyMix } from "../wasm/types.ts";
 import type { HumanArtic } from "../wasm/types.ts";
 import type { VoiceSource } from "../wasm/types.ts";
 import type { EnvironmentSettings } from "../wasm/types.ts";
+import type { HarmonyPlan } from "../worklet/protocol.ts";
 
 type Listener = (t: TelemetryMessage) => void;
 
@@ -141,9 +142,9 @@ export class AudioEngine {
   }
 
   /** Send a gestural plan (times relative to now). Returns the request id. */
-  schedule(plan: { gestures: import("../wasm/types.ts").Gesture[]; segments: import("../wasm/types.ts").PlannedSegment[]; end: number }, replace = true): number {
+  schedule(plan: { gestures: import("../wasm/types.ts").Gesture[]; segments: import("../wasm/types.ts").PlannedSegment[]; end: number }, replace = true, harmony?: HarmonyPlan): number {
     const id = ++this.speakId;
-    this.send({ type: "schedule", gestures: plan.gestures, segments: plan.segments, end: plan.end, id, replace });
+    this.send({ type: "schedule", gestures: plan.gestures, segments: plan.segments, end: plan.end, id, replace, harmony });
     return id;
   }
 

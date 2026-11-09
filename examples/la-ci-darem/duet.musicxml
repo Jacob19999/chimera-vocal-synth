@@ -1,0 +1,923 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<score-partwise version="4.0">
+  <work>
+    <work-title>Don Giovanni, K. 527</work-title>
+  </work>
+  <movement-title>Là ci darem la mano</movement-title>
+  <identification>
+    <creator type="composer">Wolfgang Amadeus Mozart</creator>
+    <creator type="lyricist">Lorenzo Da Ponte</creator>
+    <source>Historical vocal score, IMSLP68957, pp. 64–68</source>
+  </identification>
+  <part-list>
+    <score-part id="P1">
+      <part-name>Don Giovanni</part-name>
+    </score-part>
+    <score-part id="P2">
+      <part-name>Zerlina</part-name>
+    </score-part>
+  </part-list>
+  <part id="P1">
+    <measure number="1">
+      <attributes>
+        <divisions>8</divisions>
+        <key>
+          <fifths>3</fifths>
+        </key>
+        <time>
+          <beats>2</beats>
+          <beat-type>4</beat-type>
+        </time>
+        <clef>
+          <sign>F</sign>
+          <line>4</line>
+        </clef>
+      </attributes>
+      <direction>
+        <direction-type>
+          <words>Andante</words>
+        </direction-type>
+        <sound tempo="66" />
+      </direction>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">Là</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">ci</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">da</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">rem</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">la</text></lyric></note>
+    </measure>
+    <measure number="2">
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">ma</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">no,</text></lyric></note>
+    </measure>
+    <measure number="3">
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">là</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">mi</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">di</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">rai</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">di</text></lyric></note>
+    </measure>
+    <measure number="4">
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">sì;</text></lyric></note>
+      <note><rest /><duration>8</duration><type>quarter</type></note>
+    </measure>
+    <measure number="5">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">ve</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">di,</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">non</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">è</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">lon</text></lyric></note>
+    </measure>
+    <measure number="6">
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">ta</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">no,</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">par</text></lyric></note>
+    </measure>
+    <measure number="7">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><type>32nd</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">tiam,</text><extend type="start" /></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>3</duration><type>16th</type><dot /><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">ben</text><extend type="start" /></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">mio,</text></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">da</text><extend type="start" /></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="8">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">qui.</text></lyric></note>
+      <note><rest /><duration>8</duration><type>quarter</type></note>
+    </measure>
+    <measure number="9">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="10">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="11">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="12">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="13">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="14">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="15">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="16">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="17">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="18">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="19">
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">Vie</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">ni,</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">mio</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">bel</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">di</text><extend type="start" /></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="20">
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>6</duration><type>eighth</type><dot /><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">let</text><extend type="start" /></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">to!</text></lyric></note>
+      <note><rest /><duration>4</duration><type>eighth</type></note>
+    </measure>
+    <measure number="21">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="22">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="23">
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">Io</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">can</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">gie</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">rò</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">tuo</text><extend type="start" /></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="24">
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>6</duration><type>eighth</type><dot /><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">sor</text><extend type="start" /></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">te!</text></lyric></note>
+      <note><rest /><duration>4</duration><type>eighth</type></note>
+    </measure>
+    <measure number="25">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="26">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="27">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="28">
+      <note><rest /><duration>8</duration><type>quarter</type></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">Vie</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">ni!</text></lyric></note>
+    </measure>
+    <measure number="29">
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">vie</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">ni!</text></lyric></note>
+      <note><rest /><duration>4</duration><type>eighth</type></note>
+    </measure>
+    <measure number="30">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">Là</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">ci</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">da</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">rem</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">la</text></lyric></note>
+    </measure>
+    <measure number="31">
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">ma</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">no,</text></lyric></note>
+      <note><rest /><duration>4</duration><type>eighth</type></note>
+    </measure>
+    <measure number="32">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="33">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="34">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">Là</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">mi</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">di</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">rai</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">di</text></lyric></note>
+    </measure>
+    <measure number="35">
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">sì,</text></lyric></note>
+      <note><rest /><duration>8</duration><type>quarter</type></note>
+    </measure>
+    <measure number="36">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="37">
+      <note><rest /><duration>2</duration><type>16th</type></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">par</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">tiam,</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">ben</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">mio,</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">da</text></lyric></note>
+    </measure>
+    <measure number="38">
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">qui.</text></lyric></note>
+      <note><rest /><duration>8</duration><type>quarter</type></note>
+    </measure>
+    <measure number="39">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="40">
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">Vie</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">ni,</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">mio</text></lyric></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>6</duration><type>eighth</type><dot /><lyric number="1"><text xml:lang="it">bel</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">di</text></lyric></note>
+    </measure>
+    <measure number="41">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">let</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">to!</text></lyric></note>
+      <note><rest /><duration>8</duration><type>quarter</type></note>
+    </measure>
+    <measure number="42">
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">Io</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">can</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">gie</text></lyric></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>6</duration><type>eighth</type><dot /><lyric number="1"><text xml:lang="it">rò</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">tuo</text></lyric></note>
+    </measure>
+    <measure number="43">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">sor</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">te.</text></lyric></note>
+      <note><rest /><duration>8</duration><type>quarter</type></note>
+    </measure>
+    <measure number="44">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="45">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="46">
+      <note><rest /><duration>12</duration><type>quarter</type><dot /></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">An</text></lyric></note>
+    </measure>
+    <measure number="47">
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><type>32nd</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">diam!</text><extend type="start" /></lyric></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>7</duration><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><rest /><duration>4</duration><type>eighth</type></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">An</text></lyric></note>
+    </measure>
+    <measure number="48">
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration><type>32nd</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">diam!</text><extend type="start" /></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>7</duration><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><rest /><duration>8</duration><type>quarter</type></note>
+    </measure>
+    <measure number="49" implicit="yes">
+      <direction>
+        <direction-type>
+          <words>Fermata</words>
+        </direction-type>
+        <sound tempo="46" />
+      </direction>
+      <note><rest /><duration>8</duration><type>quarter</type><notations><fermata /></notations></note>
+      <note><rest /><duration>4</duration><type>eighth</type></note>
+    </measure>
+    <measure number="50" implicit="yes">
+      <attributes>
+        <time>
+          <beats>6</beats>
+          <beat-type>8</beat-type>
+        </time>
+      </attributes>
+      <direction>
+        <direction-type>
+          <words>Allegro</words>
+        </direction-type>
+        <sound tempo="138" />
+      </direction>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">An</text></lyric></note>
+    </measure>
+    <measure number="51">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">diam,</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">an</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">diam,</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">mio</text></lyric></note>
+    </measure>
+    <measure number="52">
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">be</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>8</duration><tie type="start" /><type>quarter</type><notations><tied type="start" /></notations><lyric number="1"><text xml:lang="it">ne,</text><extend type="start" /></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>8</duration><tie type="stop" /><type>quarter</type><notations><tied type="stop" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">a</text></lyric></note>
+    </measure>
+    <measure number="53">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">ri</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">sto</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">rar</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">le</text></lyric></note>
+    </measure>
+    <measure number="54">
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">pe</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>8</duration><tie type="start" /><type>quarter</type><notations><tied type="start" /></notations><lyric number="1"><text xml:lang="it">ne</text><extend type="start" /></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>8</duration><tie type="stop" /><type>quarter</type><notations><tied type="stop" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">d’un</text></lyric></note>
+    </measure>
+    <measure number="55">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">in</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">no</text><extend type="start" /></lyric></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><extend type="continue" /></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="56">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">cen</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">te‿a</text></lyric></note>
+    </measure>
+    <measure number="57">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">mor!</text></lyric></note>
+      <note><rest /><duration>12</duration><type>quarter</type><dot /></note>
+    </measure>
+    <measure number="58">
+      <note><rest /><duration>20</duration></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">An</text></lyric></note>
+    </measure>
+    <measure number="59">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">diam,</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">an</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">diam,</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">mio</text></lyric></note>
+    </measure>
+    <measure number="60">
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">be</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>8</duration><tie type="start" /><type>quarter</type><notations><tied type="start" /></notations><lyric number="1"><text xml:lang="it">ne,</text><extend type="start" /></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>8</duration><tie type="stop" /><type>quarter</type><notations><tied type="stop" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">a</text></lyric></note>
+    </measure>
+    <measure number="61">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">ri</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">sto</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">rar</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">le</text></lyric></note>
+    </measure>
+    <measure number="62">
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">pe</text></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>8</duration><tie type="start" /><type>quarter</type><notations><tied type="start" /></notations><lyric number="1"><text xml:lang="it">ne</text><extend type="start" /></lyric></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>8</duration><tie type="stop" /><type>quarter</type><notations><tied type="stop" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">d’un</text></lyric></note>
+    </measure>
+    <measure number="63">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">in</text></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">no</text><extend type="start" /></lyric></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><extend type="continue" /></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="64">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">cen</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">te‿a</text></lyric></note>
+    </measure>
+    <measure number="65">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">mor!</text></lyric></note>
+      <note><rest /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="66">
+      <note><rest /><duration>12</duration><type>quarter</type><dot /></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">An</text></lyric></note>
+    </measure>
+    <measure number="67">
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">diam!</text></lyric></note>
+      <note><rest /><duration>20</duration></note>
+    </measure>
+    <measure number="68">
+      <note><rest measure="yes" /><duration>24</duration></note>
+    </measure>
+    <measure number="69">
+      <note><rest measure="yes" /><duration>24</duration></note>
+    </measure>
+    <measure number="70">
+      <note><rest measure="yes" /><duration>24</duration></note>
+    </measure>
+    <measure number="71">
+      <note><rest measure="yes" /><duration>24</duration></note>
+    </measure>
+    <measure number="72">
+      <note><rest /><duration>12</duration><type>quarter</type><dot /></note>
+      <note><pitch><step>E</step><octave>3</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">An</text></lyric></note>
+    </measure>
+    <measure number="73">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">diam!</text></lyric></note>
+      <note><rest /><duration>16</duration><type>half</type></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">An</text></lyric></note>
+    </measure>
+    <measure number="74">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">diam,</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">mio</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">bene‿</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">an</text></lyric></note>
+    </measure>
+    <measure number="75">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">diam,</text></lyric></note>
+      <note><rest /><duration>12</duration><type>quarter</type><dot /></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">le</text></lyric></note>
+    </measure>
+    <measure number="76">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">pe</text></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">ne‿a</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">ri</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">sto</text></lyric></note>
+    </measure>
+    <measure number="77">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">rar</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">d’un</text></lyric></note>
+    </measure>
+    <measure number="78">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>6</duration><type>eighth</type><dot /><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">in</text><extend type="start" /></lyric></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">no</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>1</duration><type>32nd</type><notations><ornaments><trill-mark /></ornaments><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">cen</text><extend type="start" /></lyric></note>
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><type>32nd</type><lyric number="1"><extend type="continue" /></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><extend type="continue" /></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>3</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>3</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">te‿a</text></lyric></note>
+    </measure>
+    <measure number="79">
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">mor!</text></lyric></note>
+      <note><rest /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="80">
+      <note><rest measure="yes" /><duration>24</duration></note>
+    </measure>
+    <measure number="81">
+      <note><rest measure="yes" /><duration>24</duration></note>
+    </measure>
+    <measure number="82">
+      <note><rest measure="yes" /><duration>24</duration></note>
+    </measure>
+    <measure number="83">
+      <note><rest measure="yes" /><duration>24</duration></note>
+      <barline location="right">
+        <bar-style>light-heavy</bar-style>
+      </barline>
+    </measure>
+  </part>
+  <part id="P2">
+    <measure number="1">
+      <attributes>
+        <divisions>8</divisions>
+        <key>
+          <fifths>3</fifths>
+        </key>
+        <time>
+          <beats>2</beats>
+          <beat-type>4</beat-type>
+        </time>
+        <clef>
+          <sign>G</sign>
+          <line>2</line>
+        </clef>
+      </attributes>
+      <direction>
+        <direction-type>
+          <words>Andante</words>
+        </direction-type>
+        <sound tempo="66" />
+      </direction>
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="2">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="3">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="4">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="5">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="6">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="7">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="8">
+      <note><rest /><duration>14</duration></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">Vor</text></lyric></note>
+    </measure>
+    <measure number="9">
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>6</duration><type>eighth</type><dot /><lyric number="1"><text xml:lang="it">rei,</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">e</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">non</text></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">vor</text></lyric></note>
+    </measure>
+    <measure number="10">
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">re</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">i,</text></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">mi</text></lyric></note>
+    </measure>
+    <measure number="11">
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>6</duration><type>eighth</type><dot /><lyric number="1"><text xml:lang="it">tre</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">ma‿un</text></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">po</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">co‿il</text></lyric></note>
+    </measure>
+    <measure number="12">
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>1</duration><type>32nd</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">cor,</text><extend type="start" /></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>7</duration><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><rest /><duration>6</duration><type>eighth</type><dot /></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">fe</text></lyric></note>
+    </measure>
+    <measure number="13">
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>6</duration><type>eighth</type><dot /><lyric number="1"><text xml:lang="it">li</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">ce,‿è</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">ver,</text></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">sa</text></lyric></note>
+    </measure>
+    <measure number="14">
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">re</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>8</duration><type>quarter</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">i,</text><extend type="start" /></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="15">
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">ma</text><extend type="start" /></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">può</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">bur</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">lar</text></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">mi</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">an</text></lyric></note>
+    </measure>
+    <measure number="16">
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">cor,</text><extend type="start" /></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><extend type="continue" /></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>8</duration><type>quarter</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">ma</text></lyric></note>
+    </measure>
+    <measure number="17">
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">può</text><extend type="start" /></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">bur</text><extend type="start" /></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">lar</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">mi</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">an</text></lyric></note>
+    </measure>
+    <measure number="18">
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">cor!</text></lyric></note>
+      <note><rest /><duration>8</duration><type>quarter</type></note>
+    </measure>
+    <measure number="19">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="20">
+      <note><rest /><duration>12</duration><type>quarter</type><dot /></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">Mi</text></lyric></note>
+    </measure>
+    <measure number="21">
+      <note><pitch><step>A</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">fa</text><extend type="start" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">pie</text><extend type="start" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>A</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">tà</text><extend type="start" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">Ma</text><extend type="start" /></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="22">
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">set</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">to!</text></lyric></note>
+      <note><rest /><duration>8</duration><type>quarter</type></note>
+    </measure>
+    <measure number="23">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="24">
+      <note><rest /><duration>12</duration><type>quarter</type><dot /></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><tie type="start" /><type>eighth</type><notations><tied type="start" /></notations><lyric number="1"><text xml:lang="it">Pre</text><extend type="start" /></lyric></note>
+    </measure>
+    <measure number="25">
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><tie type="stop" /><type>eighth</type><notations><tied type="stop" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">sto</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">non</text></lyric></note>
+      <note><pitch><step>A</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">son</text><extend type="start" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">più</text><extend type="start" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="26">
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">for</text><extend type="start" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">te,</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">non</text></lyric></note>
+      <note><pitch><step>A</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">son</text><extend type="start" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">più</text><extend type="start" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="27">
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">for</text><extend type="start" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">te,</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">non</text></lyric></note>
+      <note><pitch><step>A</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">son</text><extend type="start" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">più</text><extend type="start" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="28">
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">for</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">te!</text></lyric></note>
+      <note><rest /><duration>8</duration><type>quarter</type></note>
+    </measure>
+    <measure number="29">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="30">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="31">
+      <note><rest /><duration>12</duration><type>quarter</type><dot /></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">Vor</text></lyric></note>
+    </measure>
+    <measure number="32">
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>6</duration><type>eighth</type><dot /><lyric number="1"><text xml:lang="it">rei,</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">e</text></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">non</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">vor</text></lyric></note>
+    </measure>
+    <measure number="33">
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">re</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">i,</text></lyric></note>
+      <note><rest /><duration>8</duration><type>quarter</type></note>
+    </measure>
+    <measure number="34">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="35">
+      <note><rest /><duration>12</duration><type>quarter</type><dot /></note>
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">Mi</text></lyric></note>
+    </measure>
+    <measure number="36">
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>1</duration><type>32nd</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">tre</text><extend type="start" /></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>5</duration><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">ma‿un</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">po</text></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">co‿il</text><extend type="start" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="37">
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">cor;</text></lyric></note>
+      <note><rest /><duration>8</duration><type>quarter</type></note>
+    </measure>
+    <measure number="38">
+      <note><rest /><duration>4</duration><type>eighth</type></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>5</octave></pitch><duration>12</duration><tie type="start" /><type>quarter</type><dot /><notations><tied type="start" /><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">ma</text><extend type="start" /></lyric></note>
+    </measure>
+    <measure number="39">
+      <note><pitch><step>F</step><alter>1</alter><octave>5</octave></pitch><duration>2</duration><tie type="stop" /><type>16th</type><notations><tied type="stop" /></notations><lyric number="1"><extend type="continue" /></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">può</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">bur</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><type>32nd</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">lar</text><extend type="start" /></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>1</duration><type>32nd</type><lyric number="1"><extend type="continue" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>1</duration><type>32nd</type><lyric number="1"><extend type="continue" /></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>1</duration><type>32nd</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">mi</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">an</text></lyric></note>
+    </measure>
+    <measure number="40">
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">cor.</text></lyric></note>
+      <note><rest /><duration>4</duration><type>eighth</type></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">Mi</text></lyric></note>
+    </measure>
+    <measure number="41">
+      <note><pitch><step>D</step><alter>1</alter><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">fa</text><extend type="start" /></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">pie</text><extend type="start" /></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>D</step><alter>1</alter><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">tà</text><extend type="start" /></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">Ma</text><extend type="start" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="42">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">set</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">to;</text></lyric></note>
+      <note><rest /><duration>4</duration><type>eighth</type></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>4</duration><tie type="start" /><type>eighth</type><notations><tied type="start" /></notations><lyric number="1"><text xml:lang="it">pre</text><extend type="start" /></lyric></note>
+    </measure>
+    <measure number="43">
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>4</duration><tie type="stop" /><type>eighth</type><notations><tied type="stop" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">sto</text></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">non</text></lyric></note>
+      <note><pitch><step>D</step><alter>1</alter><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">son</text><extend type="start" /></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">più</text><extend type="start" /></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="44">
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">for</text><extend type="start" /></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">te,</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">non</text></lyric></note>
+      <note><pitch><step>B</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">son</text><extend type="start" /></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">più</text><extend type="start" /></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="45">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">for</text><extend type="start" /></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">te,</text></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><lyric number="1"><text xml:lang="it">non</text></lyric></note>
+      <note><pitch><step>G</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">son</text><extend type="start" /></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">più</text><extend type="start" /></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="46">
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">for</text><extend type="start" /></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">te!</text></lyric></note>
+      <note><rest /><duration>8</duration><type>quarter</type></note>
+    </measure>
+    <measure number="47">
+      <note><rest measure="yes" /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="48">
+      <note><rest /><duration>12</duration><type>quarter</type><dot /></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">An</text></lyric></note>
+    </measure>
+    <measure number="49" implicit="yes">
+      <direction>
+        <direction-type>
+          <words>Fermata</words>
+        </direction-type>
+        <sound tempo="46" />
+      </direction>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>8</duration><type>quarter</type><notations><fermata /><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">diam!</text><extend type="start" /></lyric></note>
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>4</duration><type>eighth</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="50" implicit="yes">
+      <attributes>
+        <time>
+          <beats>6</beats>
+          <beat-type>8</beat-type>
+        </time>
+      </attributes>
+      <direction>
+        <direction-type>
+          <words>Allegro</words>
+        </direction-type>
+        <sound tempo="138" />
+      </direction>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">An</text></lyric></note>
+    </measure>
+    <measure number="51">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">diam,</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">an</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">diam,</text></lyric></note>
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">mio</text></lyric></note>
+    </measure>
+    <measure number="52">
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">be</text></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>8</duration><tie type="start" /><type>quarter</type><notations><tied type="start" /></notations><lyric number="1"><text xml:lang="it">ne,</text><extend type="start" /></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>8</duration><tie type="stop" /><type>quarter</type><notations><tied type="stop" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">a</text></lyric></note>
+    </measure>
+    <measure number="53">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">ri</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">sto</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">rar</text></lyric></note>
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">le</text></lyric></note>
+    </measure>
+    <measure number="54">
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">pe</text></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>8</duration><tie type="start" /><type>quarter</type><notations><tied type="start" /></notations><lyric number="1"><text xml:lang="it">ne</text><extend type="start" /></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>8</duration><tie type="stop" /><type>quarter</type><notations><tied type="stop" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">d’un</text></lyric></note>
+    </measure>
+    <measure number="55">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">in</text></lyric></note>
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>4</duration><type>eighth</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">no</text><extend type="start" /></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><extend type="continue" /></lyric></note>
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>4</duration><type>eighth</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="56">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">cen</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">te‿a</text></lyric></note>
+    </measure>
+    <measure number="57">
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">mor!</text></lyric></note>
+      <note><rest /><duration>12</duration><type>quarter</type><dot /></note>
+    </measure>
+    <measure number="58">
+      <note><rest /><duration>20</duration></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">An</text></lyric></note>
+    </measure>
+    <measure number="59">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">diam,</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">an</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">diam,</text></lyric></note>
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">mio</text></lyric></note>
+    </measure>
+    <measure number="60">
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">be</text></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>8</duration><tie type="start" /><type>quarter</type><notations><tied type="start" /></notations><lyric number="1"><text xml:lang="it">ne,</text><extend type="start" /></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>8</duration><tie type="stop" /><type>quarter</type><notations><tied type="stop" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">a</text></lyric></note>
+    </measure>
+    <measure number="61">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">ri</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">sto</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">rar</text></lyric></note>
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">le</text></lyric></note>
+    </measure>
+    <measure number="62">
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">pe</text></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>8</duration><tie type="start" /><type>quarter</type><notations><tied type="start" /></notations><lyric number="1"><text xml:lang="it">ne</text><extend type="start" /></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>8</duration><tie type="stop" /><type>quarter</type><notations><tied type="stop" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">d’un</text></lyric></note>
+    </measure>
+    <measure number="63">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">in</text></lyric></note>
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>4</duration><type>eighth</type><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">no</text><extend type="start" /></lyric></note>
+      <note><pitch><step>F</step><alter>1</alter><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><extend type="continue" /></lyric></note>
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>4</duration><type>eighth</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+    </measure>
+    <measure number="64">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">cen</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">te‿a</text></lyric></note>
+    </measure>
+    <measure number="65">
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">mor!</text></lyric></note>
+      <note><rest /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="66">
+      <note><rest measure="yes" /><duration>24</duration></note>
+    </measure>
+    <measure number="67">
+      <note><rest measure="yes" /><duration>24</duration></note>
+    </measure>
+    <measure number="68">
+      <note><rest /><duration>12</duration><type>quarter</type><dot /></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">An</text></lyric></note>
+    </measure>
+    <measure number="69">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">diam!</text></lyric></note>
+      <note><rest /><duration>20</duration></note>
+    </measure>
+    <measure number="70">
+      <note><rest /><duration>12</duration><type>quarter</type><dot /></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">An</text></lyric></note>
+    </measure>
+    <measure number="71">
+      <note><pitch><step>F</step><alter>1</alter><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">diam!</text></lyric></note>
+      <note><rest /><duration>20</duration></note>
+    </measure>
+    <measure number="72">
+      <note><rest measure="yes" /><duration>24</duration></note>
+    </measure>
+    <measure number="73">
+      <note><rest /><duration>20</duration></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">An</text></lyric></note>
+    </measure>
+    <measure number="74">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">diam,</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">mio</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">bene‿</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">an</text></lyric></note>
+    </measure>
+    <measure number="75">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">diam,</text></lyric></note>
+      <note><rest /><duration>12</duration><type>quarter</type><dot /></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">le</text></lyric></note>
+    </measure>
+    <measure number="76">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">pe</text></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">ne‿a</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">ri</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">sto</text></lyric></note>
+    </measure>
+    <measure number="77">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">rar</text></lyric></note>
+      <note><pitch><step>E</step><octave>5</octave></pitch><duration>12</duration><type>quarter</type><dot /><lyric number="1"><text xml:lang="it">d’un</text></lyric></note>
+    </measure>
+    <measure number="78">
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>6</duration><type>eighth</type><dot /><notations><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">in</text><extend type="start" /></lyric></note>
+      <note><pitch><step>D</step><octave>5</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">no</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>1</duration><type>32nd</type><notations><ornaments><trill-mark /></ornaments><slur type="start" number="1" /></notations><lyric number="1"><text xml:lang="it">cen</text><extend type="start" /></lyric></note>
+      <note><pitch><step>C</step><alter>1</alter><octave>5</octave></pitch><duration>1</duration><type>32nd</type><lyric number="1"><extend type="continue" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><extend type="continue" /></lyric></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>2</duration><type>16th</type><notations><slur type="stop" number="1" /></notations><lyric number="1"><extend type="stop" /></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>4</duration><type>eighth</type><lyric number="1"><text xml:lang="it">te‿a</text></lyric></note>
+    </measure>
+    <measure number="79">
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>8</duration><type>quarter</type><lyric number="1"><text xml:lang="it">mor!</text></lyric></note>
+      <note><rest /><duration>16</duration><type>half</type></note>
+    </measure>
+    <measure number="80">
+      <note><rest measure="yes" /><duration>24</duration></note>
+    </measure>
+    <measure number="81">
+      <note><rest measure="yes" /><duration>24</duration></note>
+    </measure>
+    <measure number="82">
+      <note><rest measure="yes" /><duration>24</duration></note>
+    </measure>
+    <measure number="83">
+      <note><rest measure="yes" /><duration>24</duration></note>
+      <barline location="right">
+        <bar-style>light-heavy</bar-style>
+      </barline>
+    </measure>
+  </part>
+</score-partwise>

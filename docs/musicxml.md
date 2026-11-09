@@ -1,5 +1,31 @@
 # Sing a MusicXML score
 
+## Sing live in the browser
+
+Choose **Opera → Play duet** for the complete vocal number “Là ci darem la mano”
+from Act I, No. 7 of Mozart’s *Don Giovanni*. Both faces use live telemetry from
+their own voice and the lyrics highlight as each singer enters. **Import MusicXML**
+replaces the duet. The **Là ci darem la mano** button restores Mozart.
+
+The included MusicXML transcribes both vocal staves through the final bars, with
+Italian IPA, ties, lyric slurs, the 2/4 Andante, the fermata, and the 6/8 Allegro.
+The printed edition gives verbal tempos. Playback uses a quarter note at 66 BPM
+for Andante and a dotted quarter at 92 BPM for Allegro. The written fermata gets
+a longer hold, and the cue notes and final trills use measured durations.
+The instrumental staves are omitted, with their rests preserved in the vocal lines.
+[Historical vocal score, pp. 64–68](https://s9.imslp.org/files/imglnks/usimg/1/1a/IMSLP68957-PMLP36804-Mozart_-_Don_Giovanni_it-eng_Vocal_Score.pdf)
+
+The same score is available in **Sing → Lyrics**, where the piano roll shows both
+parts. Both modes use the selected Environment.
+
+**Import MusicXML** accepts a local partwise `.musicxml`, `.xml`, or `.mxl` score
+with one or two monophonic vocal parts. A two-part import assigns the lower line
+to the male body and the higher line to the female body. For custom or non-English
+diction, select the score and a `.ipa` file together. Put one line of IPA per vocal
+part in score order, using the same syllable rules as the CLI below.
+
+## Render from the command line
+
 Render a single vocal line from a partwise `.musicxml`, `.xml`, or compressed `.mxl` file.
 
 ```sh
@@ -61,6 +87,6 @@ cargo run --release -p chimera-cli -- render musicxml \
   --ipa examples/don-giovanni/opening.ipa
 
 cargo run --release -p chimera-cli -- render musicxml \
-  examples/don-giovanni/opening.musicxml out/don-giovanni-matched male \
+  examples/don-giovanni/opening.musicxml out/musicxml/don-giovanni-matched male \
   --ipa examples/don-giovanni/opening.ipa --reference out/scotti-opening.wav
 ```

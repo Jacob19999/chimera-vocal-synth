@@ -120,6 +120,13 @@ export function lyricsToSyllables(text: string): Syllable[] {
   return call("lyricsToSyllables", { text });
 }
 
+export interface ScoreNote { midi: number; start: number; end: number; syl: Syllable }
+export interface ScoreTrack { name: string; notes: ScoreNote[]; end: number }
+
+export function importScore(source: { xml: string } | { mxl: string }, ipa?: string): ScoreTrack[] {
+  return call("importScore", { ...source, ipa });
+}
+
 // ------------------------------------------------------------------ planning
 
 export interface PlanOptions {

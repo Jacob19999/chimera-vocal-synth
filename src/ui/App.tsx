@@ -16,11 +16,12 @@ import { CreatureView } from "./components/CreatureView.tsx";
 import { creatureById } from "../wasm/engine.ts";
 import { BeatboxRight, BeatOverlay, beatInfo, beatSlots } from "./components/BeatboxPanel.tsx";
 import { SingRight, singInfo, singWords } from "./components/SingPanel.tsx";
-import { playDemo, DEMO_SONGS } from "./singing.ts";
+import { playDemo, useSing, DEMO_SONGS } from "./singing.ts";
 import type { Mode } from "./store.ts";
 import type { BodyName } from "../worklet/protocol.ts";
 import { BodyPad } from "./components/BodyPad.tsx";
 import { bodyLabel, presetOf, PRESETS } from "./body.ts";
+import { OperaMode } from "./components/OperaMode.tsx";
 import { EnvironmentPanel } from "./components/EnvironmentPanel.tsx";
 
 // three.js only loads when the 3D view is first shown
@@ -63,11 +64,12 @@ function TopBar() {
           { value: "play", label: "Play" },
           { value: "speak", label: "Speak" },
           { value: "sing", label: "Sing" },
+          { value: "opera", label: "Opera" },
           { value: "bestiary", label: "Bestiary" },
           { value: "beatbox", label: "Beatbox" },
         ]}
       />
-      {mode !== "bestiary" && (
+      {mode !== "bestiary" && mode !== "opera" && (
         <div className="body-control">
           <Segmented<BodyName>
             label="Body"
@@ -134,12 +136,13 @@ function StartPrompt() {
   const playCall = useStore((s) => s.playCall);
   const creature = useStore((s) => s.creature);
   const setBeatPlaying = useStore((s) => s.setBeatPlaying);
+  const importedScore = useSing((s) => s.score !== null);
   if (started) return null;
   const copy = {
     bestiary: ["Each animal's sound comes from a simulation of its own sound source and airway.", "Start and hear a call", "Then play its calls, or hold the keys to sustain it at a pitch."],
     beatbox: ["Every drum here is a mouth sound: lips, tongue and larynx pushing, sealing and sucking air.", "Start the beat", "Then edit the pattern, tap the pads, or hum a bass note on the keys."],
     speak: ["Every sound here is produced by simulating air moving through a throat, mouth and nose.", "Start the voice", "Then type something and press Speak, or tap a sound in the chart."],
-    sing: ["Every sound here is produced by simulating air moving through a throat, mouth and nose.", "Start and hear a song", "Then play the keys: each note sings the next syllable of the lyrics."],
+    sing: ["Every sound here is produced by simulating air moving through a throat, mouth and nose.", importedScore ? "Start audio" : "Start and hear a song", importedScore ? "Then play the imported score in Lyrics." : "Then play the keys: each note sings the next syllable of the lyrics."],
   }[mode as "bestiary" | "beatbox" | "speak" | "sing"] ?? ["Every sound here is produced by simulating air moving through a throat, mouth and nose.", "Breathe in and start", "Then drag the tongue, lips or jaw, or play the keys."];
   return (
     <div className="start-prompt" data-layout="overlay">
@@ -149,7 +152,7 @@ function StartPrompt() {
         disabled={starting}
         onClick={async () => {
           // the demo waits for audio itself, so a stop meanwhile (body, mode) cancels it
-          if (mode === "sing") return void playDemo(DEMO_SONGS[0].name, useStore.getState().body, start);
+          if (mode === "sing" && !importedScore) return void playDemo(DEMO_SONGS[0].name, useStore.getState().body, start);
           await start();
           const first = creatureById(creature)?.calls[0];
           if (mode === "bestiary" && first) playCall(first.id);
@@ -231,10 +234,10 @@ function Wall() {
   return (
     <div className={`app text-colors mode-${mode}`}>
       <TopBar />
-      <main className={`wall wall-${mode}`}>
+      {mode === "opera" ? <OperaMode /> : <main className={`wall wall-${mode}`}>
         <LeftScreen />
         {mode === "play" ? <PlayRight /> : mode === "speak" ? <SpeakRight /> : mode === "sing" ? <SingRight /> : mode === "beatbox" ? <BeatboxRight /> : <BestiaryRight />}
-      </main>
+      </main>}
       <EnvironmentPanel />
     </div>
   );

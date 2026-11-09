@@ -14,6 +14,7 @@ use chimera::phonetics::sing::{self, MelismaOptions, NoteOnOptions, SongOptions,
 use chimera::phonetics::english::EnglishG2P;
 use chimera::phonetics::{Segment, Syllable, ipa, songs, syllables, vowel_data};
 use chimera::voice::human_airway::HumanAirway;
+use base64::Engine as _;
 use serde_json::{Value, json};
 use std::cell::RefCell;
 
@@ -126,6 +127,7 @@ fn dispatch(st: &mut State, req: &Value) -> Res {
         "g2pPhrases" => to_json(&st.g2p.to_phrases(&arg::<String>(req, "text")?)),
         "g2pWord" => to_json(&st.g2p.word(&arg::<String>(req, "word")?, arg::<Option<bool>>(req, "reduce")?.unwrap_or(true))),
         "lyricsToSyllables" => to_json(&syllables::lyrics_to_syllables(&arg::<String>(req, "text")?, &st.g2p)),
+        "importScore" => import_score(req, &st.g2p),
         // ---------------------------------------------------------------- creatures
         "creaturePreview" => {
             let id: String = arg(req, "id")?;
@@ -154,6 +156,46 @@ fn dispatch(st: &mut State, req: &Value) -> Res {
         "leadIn" => Ok(json!(BeatPlayer::lead_in(&arg::<String>(req, "id")?, arg::<BodyMix>(req, "body")?))),
         _ => Err(format!("unknown fn {name}")),
     }
+}
+
+fn import_score(req: &Value, g2p: &EnglishG2P) -> Res {
+    use chimera_score::{Selection, decode, ipa_syllables, parse, score_syllables, vocal_parts};
+    let archive: Option<String> = arg(req, "mxl")?;
+    let xml = if let Some(encoded) = archive {
+        if encoded.len() > 24 * 1024 * 1024 {
+            return Err("compressed score exceeds the import limit".into());
+        }
+        let bytes = base64::engine::general_purpose::STANDARD.decode(encoded).map_err(|e| e.to_string())?;
+        decode(std::io::Cursor::new(bytes), true)?
+    } else {
+        arg(req, "xml")?
+    };
+    let mut parts = vocal_parts(&xml)?;
+    if parts.len() > 2 {
+        return Err("export one or two vocal parts for live singing".into());
+    }
+    if parts.is_empty() {
+        parts.push((String::new(), "Voice".into()));
+    }
+    let ipa: Option<String> = arg(req, "ipa")?;
+    let lines: Vec<_> = ipa.as_deref().unwrap_or_default().lines().map(str::trim).filter(|s| !s.is_empty()).collect();
+    if !lines.is_empty() && lines.len() != parts.len() {
+        return Err("supply one line of IPA per voice, in score order".into());
+    }
+    let mut tracks = Vec::new();
+    for (i, (id, name)) in parts.iter().enumerate() {
+        let selected = Selection { part: (!id.is_empty()).then_some(id.as_str()), ..Default::default() };
+        let score = parse(&xml, &selected)?;
+        let syl = match lines.get(i) {
+            Some(ipa) => ipa_syllables(&score.notes, ipa),
+            None => score_syllables(&score.notes, g2p),
+        }.map_err(|e| format!("{name}: {e}"))?;
+        let notes = score.notes.iter().zip(syl).map(|(note, syl)| json!({
+            "midi": note.midi, "start": note.start, "end": note.end, "syl": syl,
+        })).collect::<Vec<_>>();
+        tracks.push(json!({ "name": name, "notes": notes, "end": score.end }));
+    }
+    Ok(Value::Array(tracks))
 }
 
 /// Everything constant the UI needs: articulators, bodies, defaults, sound catalogues.

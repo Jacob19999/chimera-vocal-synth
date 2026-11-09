@@ -8,7 +8,8 @@
  */
 import { writeGestures, writeSteps, fromUtf8, utf8, CONTROL_KEYS } from "../wasm/wire.ts";
 import type { ToWorklet, FromWorklet, TelemetryMessage } from "./protocol.ts";
-import type { BodyMix, CreatureTelemetry } from "../wasm/types.ts";
+import { MAX_GESTURES } from "./protocol.ts";
+import type { BodyMix, CreatureTelemetry, EnvironmentSettings } from "../wasm/types.ts";
 
 // Minimal AudioWorkletGlobalScope typings
 declare const sampleRate: number;
@@ -25,8 +26,7 @@ const ARTIC_KEYS = CONTROL_KEYS.slice(0, 17);
 const SOURCE_KEYS = ["f0", "glide", "pressure", "breathiness", "tension", "fry", "roughness", "vibratoDepth", "vibratoRate", "drift", "voiced", "brightness"];
 /** scalars at the head of the human telemetry block (crates/chimera-wasm/src/lib.rs) */
 const TELE_HEADER = 16;
-/** gestures taken from one schedule message */
-const MAX_GESTURES = 4000;
+const ROOMS = ["dry", "studio", "room", "hall", "cathedral"] as const;
 
 /** What the engine says about the creature it switched to (crates/chimera-wasm/src/lib.rs). */
 interface CreatureInfo {
@@ -45,6 +45,8 @@ class ChimeraProcessor extends AudioWorkletProcessor {
   private blocks = 0;
   private load = 0;
   private creature: CreatureInfo | null = null;
+  private environment: EnvironmentSettings | undefined;
+  private harmony: { handle: number; end: number } | undefined;
 
   constructor(options: { processorOptions: { module: WebAssembly.Module } }) {
     super();
@@ -75,8 +77,8 @@ class ChimeraProcessor extends AudioWorkletProcessor {
     return this.x.memory.buffer;
   }
 
-  private body(): BodyMix {
-    return { female: this.x.engine_body_female(this.h), child: this.x.engine_body_child(this.h) };
+  private body(h = this.h): BodyMix {
+    return { female: this.x.engine_body_female(h), child: this.x.engine_body_child(h) };
   }
 
   private postReady(): void {
@@ -102,16 +104,27 @@ class ChimeraProcessor extends AudioWorkletProcessor {
     return new Float64Array(this.mem, this.x.engine_values(this.h), 32).fill(NaN);
   }
 
+  private setRoom(h: number, s: EnvironmentSettings): void {
+    this.x.engine_set_environment(h, Math.max(0, ROOMS.indexOf(s.preset)), s.mix, s.decay, s.damping);
+  }
+
+  private clearHarmony(): void {
+    if (!this.harmony) return;
+    this.x.engine_free(this.harmony.handle);
+    this.harmony = undefined;
+  }
+
   private handle(m: ToWorklet): void {
     const x = this.x, h = this.h;
     switch (m.type) {
       case "environment": {
-        const s = m.settings;
-        const preset = ["dry", "studio", "room", "hall", "cathedral"].indexOf(s.preset);
-        x.engine_set_environment(h, Math.max(0, preset), s.mix, s.decay, s.damping);
+        this.environment = m.settings;
+        this.setRoom(h, m.settings);
+        if (this.harmony) this.setRoom(this.harmony.handle, m.settings);
         break;
       }
       case "body":
+        this.clearHarmony();
         x.engine_set_body(h, m.body.female, m.body.child);
         this.postReady();
         break;
@@ -141,12 +154,25 @@ class ChimeraProcessor extends AudioWorkletProcessor {
         break;
       case "schedule": {
         // planning happened on the main thread; the engine shifts the gestures onto its clock
+        if (m.replace) this.clearHarmony();
+        const lead = m.lead ?? 0.03;
         const n = writeGestures(this.mem, x.engine_records(h), m.gestures, MAX_GESTURES);
-        const off = x.engine_schedule(h, n, m.lead ?? 0.03, m.replace ? 1 : 0);
+        const off = x.engine_schedule(h, n, lead, m.replace ? 1 : 0);
+        if (m.replace && m.harmony) {
+          // Both schedules start in this message, so neither voice has rendered a sample
+          // before the other is scheduled. Each uses the same lead on its own clock.
+          const voice = x.engine_new(sampleRate);
+          this.harmony = { handle: voice, end: off + Math.max(m.end, m.harmony.end) };
+          x.engine_set_body(voice, m.harmony.body.female, m.harmony.body.child);
+          if (this.environment) this.setRoom(voice, this.environment);
+          const count = writeGestures(this.mem, x.engine_records(voice), m.harmony.gestures, MAX_GESTURES);
+          x.engine_schedule(voice, count, lead, 1);
+        }
         if (m.segments.length) this.post({ type: "planned", id: m.id, t0: off, end: m.end + off, segments: m.segments.map((s) => ({ ...s, t0: s.t0 + off, t1: s.t1 + off })) });
         break;
       }
       case "stopSpeech":
+        this.clearHarmony();
         x.engine_stop_speech(h);
         break;
       case "release":
@@ -162,6 +188,7 @@ class ChimeraProcessor extends AudioWorkletProcessor {
         x.engine_beat_hit(h);
         break;
       case "creature":
+        this.clearHarmony();
         this.creature = m.id === "human" ? (x.engine_set_human(h), null) : this.engineJson<CreatureInfo>("engine_set_creature", { id: m.id, params: m.params ?? {} });
         this.postReady();
         break;
@@ -194,10 +221,25 @@ class ChimeraProcessor extends AudioWorkletProcessor {
       return true;
     }
     const t0 = Date.now();
+    let harmonyHandle: number | undefined;
     try {
       const p = this.x.engine_render(this.h, ch0.length);
       ch0.set(new Float32Array(this.mem, p, ch0.length));
       for (let c = 1; c < out.length; c++) out[c].set(new Float32Array(this.mem, this.x.engine_output_right(this.h), ch0.length));
+      const room = this.environment;
+      // Leave room for the planner's release and the room's decay, then stop spending CPU
+      // on the extra voice. Allocation and disposal happen in message handlers.
+      const tail = room && room.preset !== "dry" && room.mix > 0 ? 1.5 * room.decay + 0.75 : 0;
+      if (this.harmony && this.x.engine_clock(this.h) < this.harmony.end + 0.4 + tail) {
+        const voice = this.harmony.handle;
+        harmonyHandle = voice;
+        const left = this.x.engine_render(voice, ch0.length);
+        const right = this.x.engine_output_right(voice);
+        for (let c = 0; c < out.length; c++) {
+          const other = new Float32Array(this.mem, c === 0 ? left : right, ch0.length);
+          for (let i = 0; i < other.length; i++) out[c][i] = 0.5 * (out[c][i] + other[i]);
+        }
+      }
     } catch (err) {
       for (const ch of out) ch.fill(0);
       this.fail(err);
@@ -208,7 +250,11 @@ class ChimeraProcessor extends AudioWorkletProcessor {
     if (this.telemetryOn && !this.failed && ++this.blocks % 6 === 0) {
       try {
         if (this.creature) this.post({ type: "ctelemetry", t: this.creatureTelemetry(this.creature), load: this.load });
-        else this.post(this.humanTelemetry());
+        else {
+          const snapshot = this.humanTelemetry(this.h);
+          if (harmonyHandle !== undefined) snapshot.harmony = this.humanTelemetry(harmonyHandle);
+          this.post(snapshot);
+        }
       } catch (err) {
         this.fail(err);
       }
@@ -217,8 +263,8 @@ class ChimeraProcessor extends AudioWorkletProcessor {
   }
 
   /** The human voice's telemetry block → the message the UI reads. */
-  private humanTelemetry(): TelemetryMessage {
-    const x = this.x, h = this.h;
+  private humanTelemetry(h: number): TelemetryMessage {
+    const x = this.x;
     const p = x.engine_telemetry(h);
     const [phLen, orLen, velumPort, f0, voicing, pLung, outRms, noiseLevel, noiseNode, gate, clock, nArtic, nPh, nOr, nScope, nActive] = new Float64Array(this.mem, p, TELE_HEADER);
     const all = new Float64Array(this.mem, p, TELE_HEADER + nArtic + 3 * (nPh + nOr) + 2 * nScope);
@@ -232,7 +278,7 @@ class ChimeraProcessor extends AudioWorkletProcessor {
       type: "telemetry",
       t: { artic, phAreas, orAreas, phLen, orLen, pressureRms, flow, velumPort, glottalArea, glottalFlow, f0, voicing, pLung, outRms, noiseLevel, noiseNode, gate, clock, active },
       load: this.load,
-      body: this.body(),
+      body: this.body(h),
       nPh,
       nOr,
       beatStep: x.engine_beat_step(h),

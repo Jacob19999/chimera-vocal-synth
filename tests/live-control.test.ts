@@ -5,8 +5,10 @@
  * keyboards/channels end only when the last one lets go. (Tagged releases: crates/chimera/tests/live_control.rs.)
  */
 import { describe, expect, test } from "bun:test";
-import { wasmModule } from "./harness.ts";
+import { readFileSync } from "node:fs";
+import { initEngine, wasmModule } from "./harness.ts";
 import { fromUtf8 } from "../src/wasm/wire.ts";
+import type { TelemetryMessage } from "../src/worklet/protocol.ts";
 
 describe("worklet ordering", () => {
   test("a note scheduled right after a body change plays on the new voice; a stop cancels what came before it", async () => {
@@ -60,6 +62,75 @@ describe("worklet ordering", () => {
     expect(scoreSize()).toBe(0);
     expect(posted.filter((m) => m.type === "error")).toEqual([]);
   });
+});
+
+test("the two imported Mozart parts render together and stop on the same command", async () => {
+  await initEngine();
+  const { importScore, planSong } = await import("../src/wasm/engine.ts");
+  const xml = readFileSync("examples/la-ci-darem/duet.musicxml", "utf8");
+  const ipa = readFileSync("examples/la-ci-darem/duet.ipa", "utf8");
+  const [don, zerlina] = importScore({ xml }, ipa);
+  expect([don.name, zerlina.name]).toEqual(["Don Giovanni", "Zerlina"]);
+  expect([don.notes.length, zerlina.notes.length]).toEqual([160, 213]);
+  expect([don.notes[0].midi, zerlina.notes[0].midi]).toEqual([57, 64]);
+  expect(don.notes[0].start).toBe(0);
+  expect(zerlina.notes[0].start).toBeGreaterThan(13);
+  expect(don.end).toBe(zerlina.end);
+  expect(don.end).toBeGreaterThan(130);
+  expect(don.notes.at(-1)?.syl.text).toBe("mor!");
+  expect(zerlina.notes.at(-1)?.syl.text).toBe("mor!");
+  const duetEntry = don.notes.find((n) => n.midi === 56 && n.syl.text === "An")!.start;
+  expect(zerlina.notes.find((n) => n.start === duetEntry)?.midi).toBe(71);
+
+  type Proc = { port: { onmessage: ((e: { data: unknown }) => void) | null }; process: (i: unknown, o: Float32Array[][]) => boolean };
+  let Ctor: (new (o: unknown) => Proc) | null = null;
+  const errors: unknown[] = [];
+  const duetSnapshots: TelemetryMessage[] = [];
+  const g = globalThis as Record<string, unknown>;
+  g.sampleRate = 48000;
+  g.AudioWorkletProcessor = class {
+    port = { onmessage: null as unknown, postMessage: (m: { type: string }) => {
+      if (m.type === "error") errors.push(m);
+      if (m.type === "telemetry" && (m as TelemetryMessage).harmony) duetSnapshots.push(m as TelemetryMessage);
+    } };
+  };
+  g.registerProcessor = (_name: string, ctor: typeof Ctor) => (Ctor = ctor);
+  // @ts-expect-error the query re-registers the processor with this test's message port
+  await import("../src/worklet/processor.ts?duet");
+  const proc = () => new Ctor!({ processorOptions: { module: wasmModule } });
+  const send = (p: Proc, data: unknown) => p.port.onmessage!({ data });
+  const block = (p: Proc) => {
+    const channels = [new Float32Array(128), new Float32Array(128)];
+    p.process([], [channels]);
+    return channels;
+  };
+  const male = { female: 0, child: 0 }, female = { female: 1, child: 0 };
+  const plan = (track: typeof don, body: typeof male) => planSong(
+    track.notes.filter((n) => n.start >= duetEntry).slice(0, 5).map(({ midi, start, end, syl }) => ({ midi, beats: end - start, syl })),
+    { body, bpm: 60, t0: 0.35, vibrato: 35 },
+  );
+  const lower = plan(don, male), upper = plan(zerlina, female);
+  const mixed = proc(), onlyLower = proc(), onlyUpper = proc();
+  send(onlyUpper, { type: "body", body: female });
+  const schedule = { type: "schedule", id: 1, replace: true };
+  send(onlyLower, { ...schedule, ...lower });
+  send(onlyUpper, { ...schedule, ...upper });
+  send(mixed, { ...schedule, ...lower, harmony: { ...upper, body: female } });
+  let audible = false;
+  for (let i = 0; i < 210; i++) {
+    const a = block(onlyLower), b = block(onlyUpper), duet = block(mixed);
+    for (let c = 0; c < 2; c++) {
+      audible ||= a[c].some((v, j) => Math.abs(v) > 0.01 && Math.abs(b[c][j]) > 0.01);
+      expect(duet[c]).toEqual(Float32Array.from(a[c], (v, j) => (v + b[c][j]) / 2));
+    }
+  }
+  expect(audible).toBe(true);
+  expect(duetSnapshots.at(-1)?.harmony?.body).toEqual(female);
+  expect(duetSnapshots.at(-1)?.body).toEqual(male);
+  send(mixed, { type: "stopSpeech" });
+  send(onlyLower, { type: "stopSpeech" });
+  expect(block(mixed)).toEqual(block(onlyLower));
+  expect(errors).toEqual([]);
 });
 
 describe("MIDI ownership", () => {

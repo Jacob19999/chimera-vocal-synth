@@ -9,12 +9,17 @@
 import { create } from "zustand";
 import { engine } from "../audio/AudioEngine.ts";
 import { g2p } from "./speech.ts";
-import { lyricsToSyllables, type Syllable } from "../wasm/engine.ts";
+import { lyricsToSyllables, type ScoreNote, type ScoreTrack, type Syllable } from "../wasm/engine.ts";
 import { planSong, planNoteOn, planNoteOff, planMelisma } from "../wasm/engine.ts";
 import { EXHALE_LABEL } from "../wasm/engine.ts";
 import { DEMO_SONGS } from "../wasm/engine.ts";
-import type { Gesture } from "../wasm/types.ts";
-import { nearestBody, type BodyMix } from "./body.ts";
+import type { Gesture, Plan, SungNote } from "../wasm/types.ts";
+import { nearestBody, PRESETS, type BodyMix } from "./body.ts";
+import { MAX_GESTURES } from "../worklet/protocol.ts";
+
+export interface LoadedScore { title: string; tracks: ScoreTrack[] }
+const SCORE_LEAD = 0.35;
+const SCORE_GAP = 1e-6;
 
 /** A note on the piano roll, on the voice clock (s); t1 is null while it is held. */
 export interface RollNote {
@@ -23,6 +28,7 @@ export interface RollNote {
   t1: number | null;
   text: string;
   demo: boolean;
+  harmony: boolean;
 }
 
 /** What the piano roll draws, read every frame (mutated in place: no re-render per note). */
@@ -44,6 +50,8 @@ interface SingState {
   demo: string | null;
   /** index of the demo syllable being sung (−1: none yet) */
   demoAt: number;
+  harmonyAt: number;
+  score: LoadedScore | null;
   setLyrics: (text: string) => void;
   setCursor: (i: number) => void;
   setVibrato: (cents: number) => void;
@@ -56,6 +64,8 @@ export const useSing = create<SingState>((set, get) => ({
   vibrato: 35,
   demo: null,
   demoAt: -1,
+  harmonyAt: -1,
+  score: null,
   setLyrics: (text) => {
     stopDemo();
     set({ lyrics: text, syllables: lyricsToSyllables(text), cursor: 0 });
@@ -98,16 +108,21 @@ const written = (s: Syllable) => s.text + (s.wordEnd ? "" : "-");
  * The syllable being sung now, for the words at the mouth: the demo's note under the clock, or
  * the held key's. A melisma keeps its syllable's key, so the word stays while the pitch moves.
  */
-export function sungNow(): { key: unknown; text: string } | null {
+export function sungNow(harmony = false): { key: unknown; text: string } | null {
   const d = demoRun;
   if (d) {
     if (d.offset === null) return null;
     const t = now() - d.offset;
-    // notes follow one another without a gap, so a melisma's syllable stays put
-    const k = d.times.findIndex(([a, b]) => t >= a && t < b);
+    if (harmony) {
+      let k = noteAt(d.harmonyNotes, t);
+      if (k < 0) return null;
+      while (k > 0 && d.harmonyNotes[k].syl.melisma) k--;
+      return { key: `${d.id}:h:${k}`, text: written(d.harmonyNotes[k].syl) };
+    }
+    const k = noteAt(d.notes, t);
     return k < 0 ? null : { key: `${d.id}:${d.parent[k]}`, text: d.shown[k] };
   }
-  return sounding ? { key: sounding, text: written(sounding.syl) } : null;
+  return !harmony && sounding ? { key: sounding, text: written(sounding.syl) } : null;
 }
 
 /** The syllable whose vowel is sounding from the keys now (null when no key sings). */
@@ -128,12 +143,14 @@ const breathFor = (velocity: number) => 0.62 + 0.4 * Math.min(1, Math.max(0, vel
 
 const now = () => engine.voiceClock() ?? 0;
 
-function addNote(midi: number, t0: number, text: string, demo = false, t1: number | null = null): RollNote {
-  const n: RollNote = { midi, t0, t1, text, demo };
+function addNote(midi: number, t0: number, text: string, demo = false, t1: number | null = null, harmony = false): RollNote {
+  const n: RollNote = { midi, t0, t1, text, demo, harmony };
   roll.notes.push(n);
   // keep a minute of history
   const cut = t0 - 60;
-  if (roll.notes.length > 400 || (roll.notes[0] && (roll.notes[0].t1 ?? t0) < cut)) roll.notes = roll.notes.filter((x) => (x.t1 ?? t0) >= cut).slice(-400);
+  if (!demo && (roll.notes.length > 400 || (roll.notes[0] && (roll.notes[0].t1 ?? t0) < cut))) {
+    roll.notes = roll.notes.filter((x) => (x.t1 ?? t0) >= cut).slice(-400);
+  }
   return n;
 }
 
@@ -216,10 +233,8 @@ export function singNoteOff(midi: number, body: BodyMix): void {
 
 interface DemoRun {
   id: number;
-  /** note start/end times in plan time (s) */
-  times: [number, number][];
-  midi: number[];
-  text: string[];
+  notes: ScoreNote[];
+  harmonyNotes: ScoreNote[];
   /** what the mouth shows per note, and the note whose syllable it is (a melisma's parent) */
   shown: string[];
   parent: number[];
@@ -236,7 +251,14 @@ engine.onPlanned((m) => {
   const d = demoRun;
   if (!d || m.id !== d.id) return;
   d.offset = m.t0;
-  d.times.forEach(([a, b], k) => addNote(d.midi[k], m.t0 + a, d.text[k], true, m.t0 + b - 0.02));
+  roll.notes = roll.notes.filter((n) => (n.t1 ?? m.t0) >= m.t0 - 60 && n.t0 <= m.t0).slice(-400);
+  const notes = [
+    ...d.notes.map((note) => ({ note, harmony: false })),
+    ...d.harmonyNotes.map((note) => ({ note, harmony: true })),
+  ].sort((a, b) => a.note.start - b.note.start);
+  for (const { note, harmony } of notes) {
+    addNote(note.midi, m.t0 + note.start, note.syl.text, true, m.t0 + note.end, harmony);
+  }
 });
 
 /** Sing a demo song (after `ready`, e.g. audio startup, resolves; unless stopped meanwhile). */
@@ -256,21 +278,75 @@ export async function playDemo(name: string, body: BodyMix, ready?: () => Promis
   if (!syl.length) return;
   const shift = song.octave[nearestBody(body)] * 12;
   const notes = song.notes.map((n, i) => ({ midi: n[0] + shift, beats: n[1], syl: syl[i % syl.length] }));
-  const t0 = 0.35;
-  const plan = planSong(notes, { body, bpm: song.bpm, t0, vibrato: useSing.getState().vibrato });
+  const plan = planSong(notes, { body, bpm: song.bpm, t0: SCORE_LEAD, vibrato: useSing.getState().vibrato });
   const beat = 60 / song.bpm;
-  let t = t0;
-  const times = notes.map((n): [number, number] => {
-    const a = t;
-    t += n.beats * beat;
-    return [a, t];
+  let t = SCORE_LEAD;
+  const timed = notes.map(({ midi, beats, syl }) => {
+    const start = t;
+    t += beats * beat;
+    return { midi, syl, start, end: t };
   });
-  const id = engine.schedule({ gestures: plan.gestures, segments: plan.segments, end: plan.end });
+  queueSong(song.name, timed, plan);
+  useSing.setState({ lyrics: song.lyrics, syllables: syl, cursor: 0, score: null });
+}
+
+/** Score notes already use seconds, with gaps where the score rests. */
+function planTrack(notes: ScoreNote[], body: BodyMix, vibrato: number): Plan {
+  const plan: Plan = { gestures: [], segments: [], end: 0 };
+  let phrase: SungNote[] = [];
+  let start = notes[0].start;
+  notes.forEach((note, i) => {
+    const next = notes[i + 1];
+    const legato = next && next.start <= note.end + SCORE_GAP;
+    phrase.push({ midi: note.midi, beats: (legato ? next.start : note.end) - note.start, syl: note.syl });
+    if (legato) return;
+    const part = planSong(phrase, { body, bpm: 60, t0: start, vibrato });
+    if (plan.gestures.length + part.gestures.length > MAX_GESTURES) {
+      throw new Error("This score exceeds the live gesture limit. Import a shorter excerpt.");
+    }
+    plan.gestures.push(...part.gestures);
+    plan.segments.push(...part.segments);
+    plan.end = Math.max(plan.end, part.end);
+    phrase = [];
+    if (next) start = next.start;
+  });
+  return plan;
+}
+
+export function loadScore(score: LoadedScore | null): void {
+  stopSinging();
+  useSing.setState({ score });
+}
+
+export async function playScore(score: LoadedScore, body: BodyMix, ready: () => Promise<void>): Promise<void> {
+  stopSinging();
+  const token = demoToken;
+  await ready();
+  if (token !== demoToken) return;
+  const vibrato = useSing.getState().vibrato;
+  const [lead, harmony] = score.tracks;
+  const shifted = (track: ScoreTrack) => track.notes.map((n) => ({ ...n, start: n.start + SCORE_LEAD, end: n.end + SCORE_LEAD }));
+  const notes = shifted(lead);
+  const harmonyNotes = harmony ? shifted(harmony) : [];
+  const harmonyPlan = harmony ? planTrack(harmonyNotes, PRESETS.female, vibrato) : undefined;
+  const plan = planTrack(notes, body, vibrato);
+  // Keep the shared score clock running through written rests, including its final bars.
+  plan.end = Math.max(plan.end, lead.end + SCORE_LEAD, (harmony?.end ?? 0) + SCORE_LEAD);
+  queueSong(score.title, notes, plan, harmonyNotes, harmonyPlan);
+}
+
+function queueSong(name: string, notes: ScoreNote[], plan: Plan, harmonyNotes: ScoreNote[] = [], harmonyPlan?: Plan): void {
+  const end = Math.max(plan.end, harmonyPlan?.end ?? 0);
+  const id = engine.schedule({ ...plan, end }, true, harmonyPlan ? { ...harmonyPlan, body: PRESETS.female } : undefined);
   const parent: number[] = [];
   notes.forEach((n, i) => parent.push(n.syl.melisma && i > 0 ? parent[i - 1] : i));
   const shown = parent.map((p) => written(notes[p].syl));
-  demoRun = { id, times, midi: notes.map((n) => n.midi), text: notes.map((n) => n.syl.text), shown, parent, end: plan.end, offset: null };
-  useSing.setState({ lyrics: song.lyrics, syllables: syl, cursor: 0, demo: song.name, demoAt: -1 });
+  demoRun = { id, notes, harmonyNotes, shown, parent, end, offset: null };
+  useSing.setState({ demo: name, demoAt: -1, harmonyAt: -1 });
+}
+
+function noteAt(notes: ScoreNote[], t: number): number {
+  return notes.findIndex((n) => n.start <= t && t < n.end);
 }
 
 function stopDemo(): void {
@@ -283,7 +359,7 @@ function stopDemo(): void {
   const t = now();
   roll.notes = roll.notes.filter((n) => !(n.demo && n.t0 > t));
   for (const n of roll.notes) if (n.demo && n.t1 !== null && n.t1 > t) n.t1 = t;
-  useSing.setState({ demo: null, demoAt: -1 });
+  useSing.setState({ demo: null, demoAt: -1, harmonyAt: -1 });
 }
 
 /** Called every frame while Sing mode is shown: follow the demo's progress. */
@@ -293,12 +369,13 @@ export function tickSinging(): void {
   const t = now() - d.offset;
   if (t > d.end + 0.4) {
     demoRun = null;
-    useSing.setState({ demo: null, demoAt: -1 });
+    useSing.setState({ demo: null, demoAt: -1, harmonyAt: -1 });
     return;
   }
-  let k = -1;
-  while (k + 1 < d.times.length && d.times[k + 1][0] <= t) k++;
-  if (k !== useSing.getState().demoAt) useSing.setState({ demoAt: k });
+  const k = noteAt(d.notes, t);
+  const j = noteAt(d.harmonyNotes, t);
+  const state = useSing.getState();
+  if (k !== state.demoAt || j !== state.harmonyAt) useSing.setState({ demoAt: k, harmonyAt: j });
 }
 
 /** Stop everything sung (leaving Sing mode, changing body): demo, notes and endings. */

@@ -18,6 +18,7 @@ and the CLI) under a React UI. See the README.
 
 - `crates/chimera/`: the engine (no I/O). `crates/chimera-wasm/`: the browser's C ABI.
   `crates/chimera-cli/`: `chimera render | compare csd | compare tsp | diagnose | calibrate`.
+- `crates/chimera-score/`: MusicXML and lyric import shared by the CLI and browser.
 - `src/wasm/`: the UI's facade over the engine. `src/worklet/`: the AudioWorklet. `src/ui/`: React
   and the canvas renderers.
 - `tests/`: bun tests on the wasm build. `tools/`: e2e, layout lint, spectrogram, speech judges

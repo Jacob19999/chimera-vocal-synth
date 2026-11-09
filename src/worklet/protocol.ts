@@ -15,6 +15,10 @@ export interface PhraseMsg {
 
 export type BodyName = "male" | "female" | "child";
 
+/** Maximum number of gesture records the wasm schedule buffer can receive in one command. */
+export const MAX_GESTURES = 4000;
+export interface HarmonyPlan { body: BodyMix; gestures: Gesture[]; end: number }
+
 export type ToWorklet =
   | { type: "environment"; settings: EnvironmentSettings }
   | { type: "body"; body: BodyMix }
@@ -23,7 +27,7 @@ export type ToWorklet =
   | { type: "gate"; level: number }
   | { type: "telemetry"; enabled: boolean }
   /** gestures planned on the main thread with times relative to "now" (the worklet adds its clock) */
-  | { type: "schedule"; gestures: Gesture[]; segments: PlannedSegment[]; end: number; id: number; replace: boolean; lead?: number }
+  | { type: "schedule"; gestures: Gesture[]; segments: PlannedSegment[]; end: number; id: number; replace: boolean; lead?: number; harmony?: HarmonyPlan }
   | { type: "stopSpeech" }
   /** switch the active voice: "human" or a creature id */
   | { type: "creature"; id: string; params?: Record<string, number> }
@@ -47,6 +51,8 @@ export interface TelemetryMessage {
   nOr: number;
   /** beatbox step under the playhead (−1 when the sequencer is stopped) */
   beatStep: number;
+  /** The second singer, sampled in the same render quantum as the first. */
+  harmony?: TelemetryMessage;
 }
 
 export interface PlannedMessage {

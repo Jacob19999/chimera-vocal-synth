@@ -11,7 +11,7 @@ import { stopSpeaking } from "./speech.ts";
 import { connectMidi, disconnectMidi, type MidiStatus } from "./midi.ts";
 import { ENVIRONMENTS, type EnvironmentSettings } from "../wasm/engine.ts";
 
-export type Mode = "play" | "speak" | "sing" | "bestiary" | "beatbox";
+export type Mode = "play" | "speak" | "sing" | "opera" | "bestiary" | "beatbox";
 
 export interface BeatState {
   steps: (BeatStep | null)[];
@@ -104,7 +104,7 @@ export function creatureKeyHz(midi: number, p: Pick<ParamDef, "min" | "max">): n
 
 function updateGate(s: { hold: boolean; heldNotes: number[]; mode: Mode; keyCall: string | null }) {
   // keys that trigger calls leave the breath to the call; sung notes breathe by themselves
-  const keysBreathe = !(s.mode === "bestiary" && s.keyCall) && s.mode !== "sing";
+  const keysBreathe = !(s.mode === "bestiary" && s.keyCall) && s.mode !== "sing" && s.mode !== "opera";
   engine.gate(s.hold || (keysBreathe && s.heldNotes.length > 0) ? 1 : 0);
 }
 
@@ -163,9 +163,9 @@ export const useStore = create<State>((set, get) => ({
       get().setBeatPlaying(false);
       engine.setMic(false);
     }
-    if (prev === "sing") stopSinging();
+    if (prev === "sing" || prev === "opera") stopSinging();
     // speech and song breathe by themselves: a held breath would drone under them
-    if (m === "speak" || m === "sing") set({ hold: false });
+    if (m === "speak" || m === "sing" || m === "opera") set({ hold: false });
     if (m === "sing") ensureDictionary();
     if (m === "beatbox") {
       // a beatboxer waits with the jaw nearly closed; the sounds bring their own breath
@@ -279,7 +279,7 @@ export const useStore = create<State>((set, get) => ({
   setBody: (b) => {
     session++;
     // the new voice starts without the old one's score: a sung note would hang
-    if (get().mode === "sing") stopSinging();
+    if (get().mode === "sing" || get().mode === "opera") stopSinging();
     const f0 = defaultF0(b);
     // nor does speech carry over (and the new voice's clock starts again from zero)
     if (get().mode === "speak") stopSpeaking();
@@ -304,6 +304,7 @@ export const useStore = create<State>((set, get) => ({
     updateGate(get());
   },
   noteOn: (midi, velocity = 96) => {
+    if (get().mode === "opera") return;
     const held = get().heldNotes.filter((n) => n !== midi).concat(midi);
     set({ heldNotes: held });
     const s = get();

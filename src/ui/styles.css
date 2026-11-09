@@ -2196,6 +2196,73 @@ input[type="range"]::-moz-range-thumb {
   font-size: 9px;
 }
 
+/* ---------- Opera */
+.opera-mode {
+  display: grid;
+  grid-template-rows: minmax(min-content, 1fr) auto;
+  gap: 12px;
+}
+
+.opera-stage {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.opera-head .screen-body {
+  min-height: clamp(240px, 43vh, 520px);
+}
+
+.s-opera .score-import {
+  border-block: 0;
+  padding-bottom: 14px;
+}
+
+.score-import {
+  display: grid;
+  gap: 8px;
+  margin: 8px 14px 0;
+  padding: 8px 0;
+  border-block: 1px solid var(--frame);
+}
+
+.score-actions,
+.score-heading,
+.score-syllables {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.score-heading strong {
+  overflow-wrap: anywhere;
+}
+
+.score-lyrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  gap: 10px 16px;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
+.score-syllables {
+  position: relative;
+  align-content: start;
+  max-height: 4.75em;
+  overflow: auto;
+}
+
+.score-syllables .current {
+  color: var(--green);
+  text-decoration: underline;
+}
+
+.score-lyrics > div:nth-child(2) .current {
+  color: var(--pink);
+}
+
 .lyrics {
   padding: 6px 14px 10px;
   display: grid;

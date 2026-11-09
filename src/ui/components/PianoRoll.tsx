@@ -52,14 +52,15 @@ export function PianoRoll() {
     const want = lo <= hi ? (lo + hi) / 2 : KEY_CENTRE[nearestBody(body)];
     if (!Number.isFinite(s.centre)) s.centre = want;
     s.centre += (want - s.centre) * (1 - Math.exp(-dt / 0.6));
-    const bottom = s.centre - SPAN / 2;
+    const span = Math.max(SPAN, hi - lo + 4);
+    const bottom = s.centre - span / 2;
     const top = 6;
-    const rowH = (h - top - 4) / SPAN;
+    const rowH = (h - top - 4) / span;
     const y = (m: number) => h - 4 - (m - bottom + 0.5) * rowH;
 
     // rows: a line at each C (named), dotted lines through the black keys
     const dotted = new Path2D();
-    for (let m = Math.floor(bottom) - 1; m <= Math.ceil(bottom + SPAN) + 1; m++) {
+    for (let m = Math.floor(bottom) - 1; m <= Math.ceil(bottom + span) + 1; m++) {
       const pc = ((m % 12) + 12) % 12;
       const yc = y(m);
       if (yc < top || yc > h) continue;
@@ -81,6 +82,7 @@ export function PianoRoll() {
       if (t1 < tLeft || n.t0 > tRight) continue;
       const x0 = Math.max(left, x(n.t0)), x1 = Math.max(x0 + 3, x(t1));
       const yc = y(n.midi);
+      if (yc < top || yc > h - barH / 2) continue;
       const live = n.t0 <= clock && clock <= t1;
       const future = n.t0 > clock;
       const r = new Path2D();
@@ -92,8 +94,8 @@ export function PianoRoll() {
         ctx.fill(r);
         ctx.restore();
       }
-      beam(ctx, r, V.green, live ? 1.6 : 1.2, { alpha: live ? 1 : future ? 0.38 : 0.62, hot: live });
-      if (n.text && n.text !== "~") label(ctx, n.text.toUpperCase(), x0 + 1, yc - barH / 2 - 4, { size: 10, color: live ? V.white : TEXT.secondary, ls: 0.12, alpha: future ? 0.6 : 1 });
+      beam(ctx, r, n.harmony ? V.pink : V.green, live ? 1.6 : 1.2, { alpha: live ? 1 : future ? 0.38 : 0.62, hot: live });
+      if (!n.harmony && n.text && n.text !== "~" && yc > top + 12) label(ctx, n.text.toUpperCase(), x0 + 1, yc - barH / 2 - 4, { size: 10, color: live ? V.white : TEXT.secondary, ls: 0.12, alpha: future ? 0.6 : 1 });
     }
 
     // the pitch actually sung

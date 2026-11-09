@@ -1,0 +1,14 @@
+[package]
+name = "chimera-score"
+description = "MusicXML vocal score import for the CLI and browser"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+chimera = { path = "../chimera" }
+roxmltree = "0.21"
+zip = { version = "4.6", default-features = false, features = ["deflate-flate2"] }
+# Provide zip's Deflate backend even when the CLI is not part of the build.
+flate2 = "1"

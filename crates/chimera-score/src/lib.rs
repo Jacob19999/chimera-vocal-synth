@@ -1,13 +1,16 @@
 //! The selected monophonic line, on the score's written timeline.
+use chimera::phonetics::ipa::tokenize_ipa;
+use chimera::phonetics::syllables::{WordSource, lyrics_to_syllables, syllabify_segments};
+use chimera::phonetics::{Segment, Syllable};
 use roxmltree::{Document, Node, ParsingOptions};
 use std::collections::BTreeSet;
-use std::io::Read;
+use std::io::{Read, Seek};
 
-pub(super) const MAX_SECONDS: f64 = 300.0;
+pub const MAX_SECONDS: f64 = 300.0;
 const MAX_XML_BYTES: u64 = 16 * 1024 * 1024;
 
 #[derive(Default)]
-pub(super) struct Selection<'a> {
+pub struct Selection<'a> {
     pub part: Option<&'a str>,
     pub voice: Option<&'a str>,
     pub verse: Option<&'a str>,
@@ -15,7 +18,7 @@ pub(super) struct Selection<'a> {
 }
 
 #[derive(Clone, Debug)]
-pub(super) struct Note {
+pub struct Note {
     pub midi: f64,
     pub start: f64,
     pub end: f64,
@@ -24,7 +27,7 @@ pub(super) struct Note {
     pub language: Option<String>,
 }
 
-pub(super) struct Score {
+pub struct Score {
     pub notes: Vec<Note>,
     pub end: f64,
 }
@@ -77,28 +80,45 @@ fn document(xml: &str) -> Result<Document<'_>, String> {
     .map_err(|e| e.to_string())
 }
 
-pub(super) fn load(path: &str, select: &Selection<'_>) -> Result<Score, String> {
-    let read = || -> Result<Score, String> {
-        let file = std::fs::File::open(path).map_err(|e| e.to_string())?;
-        let xml = if path.to_ascii_lowercase().ends_with(".mxl") {
-            let mut archive = zip::ZipArchive::new(file).map_err(|e| e.to_string())?;
-            let container = bounded_text(
-                archive
-                    .by_name("META-INF/container.xml")
-                    .map_err(|e| e.to_string())?,
-            )?;
-            let container = document(&container)?;
-            let root = child(container.root_element(), "rootfiles")
-                .and_then(|n| child(n, "rootfile"))
-                .and_then(|n| n.attribute("full-path"))
-                .ok_or("MXL container has no score path")?;
-            bounded_text(archive.by_name(root).map_err(|e| e.to_string())?)?
-        } else {
-            bounded_text(file)?
-        };
-        parse(&xml, select)
-    };
-    read().map_err(|e| format!("{path}: {e}"))
+/// Read a UTF-8 MusicXML document or the primary score from a compressed MXL archive.
+pub fn decode(reader: impl Read + Seek, compressed: bool) -> Result<String, String> {
+    if !compressed {
+        return bounded_text(reader);
+    }
+    let mut archive = zip::ZipArchive::new(reader).map_err(|e| e.to_string())?;
+    let container = bounded_text(
+        archive
+            .by_name("META-INF/container.xml")
+            .map_err(|e| e.to_string())?,
+    )?;
+    let container = document(&container)?;
+    let root = child(container.root_element(), "rootfiles")
+        .and_then(|n| child(n, "rootfile"))
+        .and_then(|n| n.attribute("full-path"))
+        .ok_or("MXL container has no score path")?;
+    bounded_text(archive.by_name(root).map_err(|e| e.to_string())?)
+}
+
+pub fn vocal_parts(xml: &str) -> Result<Vec<(String, String)>, String> {
+    if xml.len() as u64 > MAX_XML_BYTES {
+        return Err("MusicXML document exceeds 16 MiB".into());
+    }
+    let doc = document(xml)?;
+    let root = doc.root_element();
+    let list = child(root, "part-list");
+    Ok(root
+        .children()
+        .filter(|p| p.has_tag_name("part"))
+        .filter(|p| notes(*p).any(|n| child(n, "lyric").is_some()))
+        .filter_map(|p| {
+            let id = p.attribute("id")?;
+            let name = list
+                .and_then(|l| l.children().find(|n| n.attribute("id") == Some(id)))
+                .and_then(|n| value(n, "part-name"))
+                .unwrap_or(id);
+            Some((id.into(), name.into()))
+        })
+        .collect())
 }
 
 fn notes<'a, 'i>(part: Xml<'a, 'i>) -> impl Iterator<Item = Xml<'a, 'i>> {
@@ -147,7 +167,7 @@ fn select_id<'a, T: Copy>(
     ))
 }
 
-fn parse(xml: &str, select: &Selection<'_>) -> Result<Score, String> {
+pub fn parse(xml: &str, select: &Selection<'_>) -> Result<Score, String> {
     let doc = document(xml)?;
     let root = doc.root_element();
     if !root.has_tag_name("score-partwise") {
@@ -426,4 +446,139 @@ fn tempo_clock(mut tempos: Vec<Tempo>, default_bpm: f64) -> impl Fn(f64) -> f64 
         let (last, at, rate) = marks[marks.partition_point(|mark| mark.0 <= beat) - 1];
         at + (beat - last) * rate
     }
+}
+
+const GAP_EPSILON: f64 = 1e-6;
+
+fn extend(previous: &Syllable) -> Syllable {
+    Syllable {
+        text: "~".into(),
+        onset: Vec::new(),
+        nucleus: previous.nucleus.clone(),
+        coda: Vec::new(),
+        melisma: Some(true),
+        word_end: previous.word_end,
+        phrase_end: false,
+    }
+}
+
+pub fn connected(previous: &Note, next: &Note) -> bool {
+    next.start <= previous.end + GAP_EPSILON
+}
+
+pub fn ipa_syllables(notes: &[Note], ipa: &str) -> Result<Vec<Syllable>, String> {
+    let tokens: Vec<_> = ipa.split_whitespace().collect();
+    if tokens.len() != notes.len() {
+        return Err(format!(
+            "{} IPA syllables for {} sounding notes (ties count once)",
+            tokens.len(),
+            notes.len()
+        ));
+    }
+    let mut out = Vec::new();
+    for (i, token) in tokens.into_iter().enumerate() {
+        let syl = if token == "~" {
+            let prev = out
+                .last()
+                .filter(|_| connected(&notes[i - 1], &notes[i]))
+                .ok_or_else(|| {
+                    format!(
+                        "melisma on note {} needs a preceding syllable in the same phrase",
+                        i + 1
+                    )
+                })?;
+            extend(prev)
+        } else {
+            let mut parts = syllabify_segments(&tokenize_ipa(token));
+            if parts.len() != 1 {
+                return Err(format!(
+                    "note {} needs exactly one IPA syllable, got {token:?}",
+                    i + 1
+                ));
+            }
+            let part = parts.pop().unwrap();
+            Syllable {
+                text: notes[i].lyric.clone(),
+                onset: part.onset,
+                nucleus: part.nucleus,
+                coda: part.coda,
+                melisma: None,
+                word_end: true,
+                phrase_end: false,
+            }
+        };
+        out.push(syl);
+    }
+    Ok(out)
+}
+
+pub fn score_syllables(notes: &[Note], g2p: &impl WordSource) -> Result<Vec<Syllable>, String> {
+    if let Some(lang) = notes
+        .iter()
+        .filter_map(|n| n.language.as_deref())
+        .find(|lang| {
+            !lang.is_empty() && !lang.split('-').next().unwrap().eq_ignore_ascii_case("en")
+        })
+    {
+        return Err(format!(
+            "MusicXML lyrics are marked {lang:?}; supply IPA for non-English pronunciation"
+        ));
+    }
+    let mut out = vec![None::<Syllable>; notes.len()];
+    let mut word = String::new();
+    let mut positions = Vec::new();
+    for (i, note) in notes
+        .iter()
+        .enumerate()
+        .filter(|(_, n)| !n.lyric.is_empty())
+    {
+        word.push_str(&note.lyric);
+        positions.push(i);
+        if matches!(note.syllabic.as_str(), "begin" | "middle") {
+            continue;
+        }
+        let syllables = lyrics_to_syllables(&word, g2p);
+        if syllables.len() != positions.len() {
+            return Err(format!(
+                "MusicXML lyric {word:?} has {} written syllables but English pronunciation yields {}; supply IPA",
+                positions.len(),
+                syllables.len()
+            ));
+        }
+        for (pos, mut syl) in positions.drain(..).zip(syllables) {
+            syl.text.clone_from(&notes[pos].lyric);
+            out[pos] = Some(syl);
+        }
+        word.clear();
+    }
+    if !positions.is_empty() {
+        return Err(format!(
+            "MusicXML ends in an unfinished lyric {word:?}; supply IPA"
+        ));
+    }
+    let mut syllables = Vec::with_capacity(notes.len());
+    for (i, syl) in out.into_iter().enumerate() {
+        let syl = syl.unwrap_or_else(|| {
+            syllables
+                .last()
+                .filter(|_| connected(&notes[i - 1], &notes[i]))
+                .map_or_else(
+                    || Syllable {
+                        text: "ɑ".into(),
+                        onset: Vec::new(),
+                        nucleus: Segment {
+                            ipa: "ɑ".into(),
+                            ..Default::default()
+                        },
+                        coda: Vec::new(),
+                        melisma: None,
+                        word_end: true,
+                        phrase_end: false,
+                    },
+                    extend,
+                )
+        });
+        syllables.push(syl);
+    }
+    Ok(syllables)
 }
