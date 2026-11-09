@@ -15,6 +15,10 @@ a longer hold, and the cue notes and final trills use measured durations.
 The instrumental staves are omitted, with their rests preserved in the vocal lines.
 [Historical vocal score, pp. 64–68](https://s9.imslp.org/files/imglnks/usimg/1/1a/IMSLP68957-PMLP36804-Mozart_-_Don_Giovanni_it-eng_Vocal_Score.pdf)
 
+In **Opera → MIDI library**, choose **accompaniment.mid** for the full duet.
+The cello, strings, and winds form a chamber reduction of the same edition's
+piano accompaniment and share the vocal score's bar grid and tempo changes.
+
 The same score is available in **Sing → Lyrics**, where the piano roll shows both
 parts. Both modes use the selected Environment.
 

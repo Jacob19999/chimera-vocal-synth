@@ -226,7 +226,7 @@ export function OperaOrchestra({ plan, alignmentError }: { plan?: OrchestraPlan;
                 if (midi) void importFile(midi);
               }}>
               <option value="" disabled>Choose a MIDI</option>
-              <optgroup label="Built-in demo"><option value={DEMO_MIDI}>{ORCHESTRA_DEMO_NAME}</option></optgroup>
+              <optgroup label="Built-in Mozart accompaniment"><option value={DEMO_MIDI}>{ORCHESTRA_DEMO_NAME}</option></optgroup>
               {library.length > 0 && (
                 <optgroup label="Local MIDI files">
                   {library.map((file) => <option key={midiKey(file)} value={midiKey(file)}>{midiPath(file)}</option>)}
@@ -293,7 +293,7 @@ export function OperaOrchestra({ plan, alignmentError }: { plan?: OrchestraPlan;
             </div>
           </>
         ) : (
-          <p>Choose the demo accompaniment or add your own .mid and .midi files.</p>
+          <p>Choose the built-in Mozart accompaniment or add your own .mid and .midi files.</p>
         )}
         {error ? <span role="alert">{error}</span> : null}
         {alignmentError ? <span role="alert">{alignmentError}</span> : null}

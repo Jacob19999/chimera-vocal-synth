@@ -1,7 +1,8 @@
 import { expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
-import { writeMidi, type MidiEvent } from "midi-file";
+import { parseMidi, writeMidi, type MidiEvent } from "midi-file";
 import type { OrchestraCue, TrackMix } from "../src/audio/orchestra.ts";
+import { ORCHESTRA_DEMO_NAME, orchestraDemoBytes } from "../src/audio/orchestraDemo.ts";
 import { planOrchestra, readOrchestraMidi } from "../src/ui/orchestraMidi.ts";
 import type { ToWorklet } from "../src/worklet/protocol.ts";
 import { initEngine, wasmModule } from "./harness.ts";
@@ -48,6 +49,38 @@ test("a MIDI track with an invalid variable-length event cannot move the reader 
   const bad = new Uint8Array(midi([[{ type: "endOfTrack", deltaTime: 0 }]]));
   const bytes = Uint8Array.from([...bad.slice(0, 21), 12, 0, 255, 1, 255, 255, 255, 255, 127, 0, 255, 47, 0]);
   expect(() => readOrchestraMidi("bad.mid", bytes.buffer)).toThrow("Invalid MIDI chunk or event length.");
+});
+
+test("the built-in Mozart accompaniment reaches the final instrumental bar", async () => {
+  const bytes = orchestraDemoBytes();
+  const file = readOrchestraMidi(ORCHESTRA_DEMO_NAME, bytes.buffer);
+  expect(file.tracks.map(({ name, instrument }) => [name, instrument])).toEqual([
+    ["Cello", "Cello"], ["Strings", "Strings"], ["Winds", "Flute"],
+  ]);
+
+  await initEngine();
+  const { importScore } = await import("../src/wasm/engine.ts");
+  const [lead, harmony] = importScore({ xml: readFileSync("examples/la-ci-darem/duet.musicxml", "utf8") },
+    readFileSync("examples/la-ci-darem/duet.ipa", "utf8"));
+  const { header, tracks } = parseMidi(bytes);
+  let ticks = 0;
+  const tempos = tracks[0].flatMap((event) => {
+    ticks += event.deltaTime;
+    return event.type === "setTempo" ? [[ticks / header.ticksPerBeat!, event.microsecondsPerBeat]] : [];
+  });
+  expect(tempos).toEqual(lead.tempo.map(([beat, , rate]) => [beat, Math.round(rate * 1e6)]));
+  const [lastBeat, lastTime, lastRate] = lead.tempo.at(-1)!;
+  expect(ticks / header.ticksPerBeat!).toBeCloseTo(lastBeat + (lead.end - lastTime) / lastRate);
+
+  const plan = planOrchestra(file, lead.tempo, 0);
+  let end = 0, longestRest = 0;
+  for (const note of plan.notes) {
+    longestRest = Math.max(longestRest, note.start - end);
+    end = Math.max(end, note.end);
+  }
+  expect(longestRest).toBeLessThan(1);
+  expect(plan.end).toBeGreaterThan(Math.max(lead.notes.at(-1)!.end, harmony.notes.at(-1)!.end));
+  expect(lead.end - plan.end).toBeCloseTo(2.5 * lastRate);
 });
 
 test("worklet starts MIDI on the vocal preroll, mixes live tracks, and sends MIDI into the room", async () => {
