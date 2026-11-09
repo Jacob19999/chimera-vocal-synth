@@ -3009,6 +3009,20 @@ input[type="range"]::-moz-range-thumb {
   margin: 0;
 }
 
+.orchestra-library {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 6px 10px;
+}
+
+.orchestra-library-picker {
+  display: grid;
+  gap: 3px;
+  flex: 0 1 340px;
+  min-width: 0;
+}
+
 .orchestra-file {
   display: flex;
   flex-wrap: wrap;
@@ -3040,6 +3054,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .orchestra-file input,
+.orchestra-library select,
 .orchestra-track select {
   min-width: 0;
   max-width: 100%;

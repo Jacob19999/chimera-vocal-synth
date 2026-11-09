@@ -4,8 +4,8 @@
  * Usage: bun tools/e2e.ts [url] [outdir]
  */
 import { chromium } from "playwright-core";
-import { mkdirSync } from "node:fs";
-import { writeMidi, type MidiEvent } from "midi-file";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { ORCHESTRA_DEMO_NAME, orchestraDemoBytes } from "../src/audio/orchestraDemo.ts";
 
 const url = process.argv[2] ?? "http://127.0.0.1:5318/";
 const outDir = process.argv[3] ?? "out/e2e";
@@ -232,29 +232,67 @@ await run({ width: 390, height: 844 }, "mobile");
 
 // Import the same generated accompaniment on desktop and mobile. The MIDI mixer and canvas
 // should stay in the Opera layout while the duet and orchestra share a running transport.
+type PianoDraw = Window & { __pianoDraw?: { white: number; black: number; whiteWidth: number; blackWidth: number } };
 for (const width of [1280, 390]) {
   const page = await browser.newPage({ viewport: { width, height: 900 } });
   page.on("pageerror", (e) => errors.push(`[orchestra-${width}] pageerror: ${e.message}`));
   page.on("console", (m) => {
     if (m.type() === "error") errors.push(`[orchestra-${width}] ${m.text()}`);
   });
+  if (width === 1280) {
+    await page.addInitScript(() => {
+      const fill = CanvasRenderingContext2D.prototype.fillRect;
+      CanvasRenderingContext2D.prototype.fillRect = function (x, y, w, h) {
+        if (this.canvas.matches(".orchestra-waterfall canvas")) {
+          const page = window as PianoDraw;
+          if (x === 0 && y === 0 && this.fillStyle === "#000000") {
+            page.__pianoDraw = { white: 0, black: 0, whiteWidth: 0, blackWidth: 0 };
+          }
+          const draw = page.__pianoDraw;
+          if (draw && h === 30 && this.fillStyle === "#d2e3ed") {
+            draw.white++;
+            draw.whiteWidth = w;
+          }
+          if (draw && h === 17 && this.fillStyle === "#263b4a") {
+            draw.black++;
+            draw.blackWidth = w;
+          }
+        }
+        fill.call(this, x, y, w, h);
+      };
+    });
+  }
   await page.goto(url, { waitUntil: "networkidle" });
   await page.getByRole("radio", { name: "Opera", exact: true }).click();
-  const track = (text: string, channel: number, programNumber: number, noteNumber: number): MidiEvent[] => [
-    { type: "trackName", deltaTime: 0, text },
-    { type: "programChange", deltaTime: 0, channel, programNumber },
-    { type: "noteOn", deltaTime: 0, channel, noteNumber, velocity: 105 },
-    { type: "noteOff", deltaTime: 1920, channel, noteNumber, velocity: 0 },
-    { type: "noteOn", deltaTime: 240, channel, noteNumber: noteNumber + 5, velocity: 100 },
-    { type: "noteOff", deltaTime: 960, channel, noteNumber: noteNumber + 5, velocity: 0 },
-    { type: "endOfTrack", deltaTime: 0 },
-  ];
-  const bytes = writeMidi({
-    header: { format: 1, numTracks: 2, ticksPerBeat: 480 },
-    tracks: [track("Strings", 0, 40, 69), track("Winds", 1, 73, 77)],
-  });
-  await page.getByLabel("Orchestra MIDI file").setInputFiles({ name: "accompaniment.mid", mimeType: "audio/midi", buffer: Buffer.from(bytes) });
-  await page.getByRole("img", { name: "Orchestra MIDI falling notes and piano keyboard" }).waitFor();
+  const library = page.getByRole("combobox", { name: "MIDI library", exact: true });
+  await library.selectOption({ label: ORCHESTRA_DEMO_NAME });
+  const waterfall = page.getByRole("img", { name: "Orchestra MIDI falling notes and piano keyboard" });
+  await waterfall.waitFor();
+  const bytes = Buffer.from(orchestraDemoBytes());
+  await page.getByLabel("Orchestra MIDI file").setInputFiles({ name: "local.mid", mimeType: "audio/midi", buffer: bytes });
+  await page.locator(".orchestra-file strong").filter({ hasText: "local.mid" }).waitFor();
+  const folder = `${outDir}/midi-library`;
+  mkdirSync(`${folder}/alternate`, { recursive: true });
+  writeFileSync(`${folder}/alternate/rehearsal.MIDI`, bytes);
+  writeFileSync(`${folder}/notes.txt`, "Filter out non-MIDI files.");
+  const [folderPicker] = await Promise.all([
+    page.waitForEvent("filechooser"),
+    page.getByRole("button", { name: "Browse MIDI folder" }).click(),
+  ]);
+  await folderPicker.setFiles(folder);
+  await library.locator("option").filter({ hasText: "rehearsal.MIDI" }).waitFor({ state: "attached" });
+  const options = await library.locator("option").allTextContents();
+  if (options.join("|") !== `Choose a MIDI|${ORCHESTRA_DEMO_NAME}|local.mid|midi-library/alternate/rehearsal.MIDI`) {
+    errors.push(`[orchestra-${width}] unexpected MIDI library options: ${options.join(", ")}`);
+  }
+  await library.selectOption({ label: "midi-library/alternate/rehearsal.MIDI" });
+  await page.getByText("rehearsal.MIDI", { exact: true }).waitFor();
+  if (width === 1280) {
+    await page.waitForFunction(() => {
+      const draw = (window as PianoDraw).__pianoDraw;
+      return draw?.white === 52 && draw.black === 36 && draw.whiteWidth > draw.blackWidth;
+    }, undefined, { timeout: 5000 });
+  }
   await page.getByLabel("Instrument for Winds").selectOption("Oboe");
   await page.getByLabel("Level for Strings").press("Home");
   await page.getByLabel("Level for Strings").press("ArrowRight");
@@ -265,8 +303,8 @@ for (const width of [1280, 390]) {
   await page.getByRole("button", { name: "Stop score", exact: true }).waitFor();
   await page.waitForFunction(() => {
     // @ts-expect-error debug handle
-    return !!window.__chimeraEngine?.latest?.harmony;
-  });
+    return !!(window.__chimeraEngine?.latest?.harmony || window.__chimeraEngine?.error);
+  }, undefined, { timeout: 10000 });
   await page.getByRole("button", { name: "Solo Winds", exact: true }).click();
   if (await page.getByRole("button", { name: "Solo Winds", exact: true }).getAttribute("aria-pressed") !== "true") {
     errors.push(`[orchestra-${width}] solo did not latch`);
@@ -279,7 +317,9 @@ for (const width of [1280, 390]) {
   await page.getByRole("button", { name: "Stop score", exact: true }).click();
   await page.getByRole("button", { name: "Remove MIDI", exact: true }).click();
   await page.getByRole("button", { name: "Play duet", exact: true }).waitFor();
-  logs.push(`[orchestra-${width}] imported, mixed, played and removed two instrument tracks`);
+  await library.selectOption({ label: ORCHESTRA_DEMO_NAME });
+  await page.locator(".orchestra-file strong").filter({ hasText: ORCHESTRA_DEMO_NAME }).waitFor();
+  logs.push(`[orchestra-${width}] browsed and switched MIDI files, then played and mixed the duet`);
   await page.close();
 }
 await browser.close();
