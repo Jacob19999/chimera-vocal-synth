@@ -4,7 +4,7 @@ import { sameBody } from "../body.ts";
 import { useStore } from "../store.ts";
 import { useModel } from "../useModel.ts";
 import { VoiceModel } from "../analysis.ts";
-import { V, heat, pressureLevel } from "../colors.ts";
+import { TEXT, V, heat, pressureLevel } from "../colors.ts";
 import { beam, beamPts, label, seg, type Pt } from "../render/vector.ts";
 
 /**
@@ -60,8 +60,8 @@ export function TubeView() {
       p.lineTo(jx + nLen, nTop + off);
       beam(ctx, p, nc, 1, { dash });
     }
-    label(ctx, "NOSE", jx + nLen + 6, nTop + 3, { size: 9, color: nc, ls: 0.16 });
-    label(ctx, open ? `VELUM OPEN ${velum.toFixed(2)} CM²` : "VELUM SHUT", jx, nTop - 12, { size: 9, color: nc, ls: 0.16, align: "center" });
+    label(ctx, "NOSE", jx + nLen + 6, nTop + 3, { size: 9, color: TEXT.secondary, ls: 0.16 });
+    label(ctx, open ? `VELUM OPEN ${velum.toFixed(2)} CM²` : "VELUM SHUT", jx, nTop - 12, { size: 9, color: TEXT.secondary, ls: 0.16, align: "center" });
 
     // silhouette and rings
     const top: Pt[] = [[x0, axisY - 3], ...secs.map((q) => [q.x, axisY - q.r] as Pt), [x1, axisY - secs[secs.length - 1].r]];
@@ -87,7 +87,7 @@ export function TubeView() {
       if (lx < lastRight + 8) continue;
       lastRight = lx + tw;
       seg(ctx, x, h - 26, x, h - 21, V.blueDim, 1);
-      label(ctx, name, lx, h - 9, { size: 9, color: V.blueMid, ls: 0.16 });
+      label(ctx, name, lx, h - 9, { size: 9, color: TEXT.secondary, ls: 0.16 });
     }
   });
   return <canvas ref={ref} className="instrument-canvas" aria-label="Area function of the simulated tube, lit by sound pressure" role="img" />;

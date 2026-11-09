@@ -51,8 +51,17 @@
   --caliper-dim: rgba(255, 179, 64, 0.45);
   --radius-s: 0;
   --radius-m: 0;
-  --font: "Hershey", "Archivo", system-ui, -apple-system, "Segoe UI", "Noto Sans", sans-serif;
+  --font-readable: "Archivo", system-ui, -apple-system, "Segoe UI", "Noto Sans", sans-serif;
+  --font: "Hershey", var(--font-readable);
   color-scheme: dark;
+}
+
+.text-colors {
+  --text: #effbff;
+  --text-dim: #e2f5fc;
+  --font: var(--font-readable);
+  color: var(--text);
+  font-family: var(--font);
 }
 
 * {
@@ -110,7 +119,7 @@ input {
 
 .environment-choice select {
   font: inherit;
-  color: var(--blue);
+  color: var(--text);
   background: var(--black);
   border: 1px solid var(--line);
   padding: 6px 8px;
@@ -127,14 +136,14 @@ input {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  color: var(--blue-mid);
+  color: var(--text-dim);
   font-size: 12px;
 }
 
 .environment-description {
   flex: 1 1 200px;
   margin: 0;
-  color: var(--blue-mid);
+  color: var(--text-dim);
   font-size: 12px;
 }
 
@@ -275,7 +284,7 @@ button.primary.large {
 
 .anatomy .no-webgl {
   margin: 24px;
-  color: var(--blue-dim);
+  color: var(--text-dim);
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1234,6 +1243,12 @@ body {
   gap: 14px;
 }
 
+.topbar-right > .primary,
+.topbar-right > .load {
+  width: 120px;
+  white-space: nowrap;
+}
+
 .volume input {
   width: 90px;
 }
@@ -1244,6 +1259,7 @@ body {
 }
 
 .wordmark {
+  font-family: "Hershey", var(--font-readable);
   font-weight: 500;
   font-size: 22px;
   letter-spacing: 0.34em;
@@ -1255,14 +1271,14 @@ body {
   font-size: 10px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--blue-dim);
+  color: var(--text-dim);
 }
 
 .segmented {
   background: transparent;
   border: 0;
   padding: 0;
-  gap: 4px 8px;
+  gap: 4px 6px;
   flex-wrap: wrap;
   min-width: 0;
 }
@@ -1270,20 +1286,22 @@ body {
 .segmented button {
   border: 1px solid transparent;
   border-radius: 0;
-  padding: 4px 11px;
+  padding: 4px 8px;
   font-size: 12px;
-  letter-spacing: 0.18em;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--blue-dim);
+  color: var(--text-dim);
 }
 
 .segmented button:hover {
-  color: var(--blue-mid);
+  color: var(--text);
+  text-shadow: var(--glow-blue);
 }
 
 .segmented button.on {
   background: transparent;
-  color: var(--blue);
+  color: var(--text);
   border-color: var(--blue);
   box-shadow: 0 0 5px rgba(79, 182, 242, 0.35), inset 0 0 4px rgba(79, 182, 242, 0.15);
   text-shadow: var(--glow-blue);
@@ -1338,17 +1356,17 @@ body {
   font-size: 10px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--blue-dim);
+  color: var(--text-dim);
 }
 
 .repo-link {
   display: inline-flex;
-  color: var(--blue-dim);
+  color: var(--text-dim);
   transition: color 120ms, filter 120ms;
 }
 
 .repo-link:hover {
-  color: var(--blue);
+  color: var(--text);
   filter: drop-shadow(0 0 3px rgba(79, 182, 242, 0.7));
 }
 
@@ -1360,10 +1378,10 @@ button.ghost,
   background: transparent;
   border: 1px solid var(--frame);
   border-radius: 0;
-  color: var(--blue-mid);
+  color: var(--text);
   padding: 5px 11px;
   font-family: var(--font);
-  font-weight: 300;
+  font-weight: 500;
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1372,7 +1390,7 @@ button.ghost,
 }
 
 button.primary {
-  color: var(--blue);
+  color: var(--text);
   border-color: var(--blue);
   box-shadow: 0 0 5px rgba(79, 182, 242, 0.35), inset 0 0 4px rgba(79, 182, 242, 0.15);
   text-shadow: var(--glow-blue);
@@ -1385,13 +1403,13 @@ button.primary.large {
 
 button.ghost:hover,
 .chip:hover {
-  color: var(--blue);
+  color: var(--text);
   border-color: var(--blue-dim);
 }
 
 .chip.on,
 .chip[aria-pressed="true"] {
-  color: var(--blue);
+  color: var(--text);
   border-color: var(--blue);
   box-shadow: 0 0 5px rgba(79, 182, 242, 0.35), inset 0 0 4px rgba(79, 182, 242, 0.15);
   text-shadow: var(--glow-blue);
@@ -1454,10 +1472,10 @@ button.ghost:hover,
 .screen-title {
   margin: 0;
   font-size: 12px;
-  font-weight: 300;
+  font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--blue);
+  color: var(--text);
   text-shadow: var(--glow-blue);
 }
 
@@ -1467,7 +1485,7 @@ button.ghost:hover,
   font-size: 10px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--blue-mid);
+  color: var(--text-dim);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1544,12 +1562,12 @@ button.ghost:hover,
   font-size: 9px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--blue-dim);
+  color: var(--text-dim);
   cursor: pointer;
 }
 
 .screen-tools .toggle input:checked + span {
-  color: var(--blue);
+  color: var(--text);
   border-color: var(--blue-dim);
   text-shadow: var(--glow-blue);
 }
@@ -1573,12 +1591,12 @@ button.ghost:hover,
 .start-prompt p {
   font-size: 12px;
   line-height: 1.6;
-  color: var(--blue-mid);
+  color: var(--text-dim);
 }
 
 .start-prompt .hint {
   font-size: 11px;
-  color: var(--blue-dim);
+  color: var(--text-dim);
 }
 
 .start-prompt .error {
@@ -1608,7 +1626,7 @@ button.ghost:hover,
   appearance: none;
   background: transparent;
   border: 1px solid var(--frame);
-  color: var(--blue-dim);
+  color: var(--text-dim);
   padding: 2px 7px;
   font-family: var(--font);
   font-size: 9px;
@@ -1618,7 +1636,7 @@ button.ghost:hover,
 }
 
 .enc-tab.on {
-  color: var(--blue);
+  color: var(--text);
   border-color: var(--blue);
   text-shadow: var(--glow-blue);
 }
@@ -1783,7 +1801,7 @@ button.midi {
   font-size: 9px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--blue-dim);
+  color: var(--text-dim);
 }
 
 button.midi.on {
@@ -2056,7 +2074,7 @@ input[type="range"]::-moz-range-thumb {
   font-weight: 300;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--blue-dim);
+  color: var(--text-dim);
   padding: 1px 3px;
   white-space: nowrap;
   text-align: center;
@@ -2215,7 +2233,7 @@ input[type="range"]::-moz-range-thumb {
   background: transparent;
   border: 1px solid var(--frame);
   border-radius: 0;
-  color: var(--blue-mid);
+  color: var(--text);
   padding: 2px 7px;
   font-family: var(--font);
   font-size: 10px;
@@ -2225,7 +2243,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .syl.sung {
-  color: var(--blue-dim);
+  color: var(--blue-mid);
   border-color: rgba(19, 57, 84, 0.6);
 }
 
@@ -2250,7 +2268,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .breath-mark {
-  color: var(--blue-mid);
+  color: var(--text-dim);
   margin-left: 2px;
 }
 
@@ -2328,7 +2346,7 @@ input[type="range"]::-moz-range-thumb {
   font-size: 9px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--blue-dim);
+  color: var(--text-dim);
   white-space: nowrap;
   overflow: hidden;
 }
@@ -2450,7 +2468,7 @@ input[type="range"]::-moz-range-thumb {
   font-size: 8px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--blue-dim);
+  color: var(--text-dim);
 }
 
 .s-pads .pad-key {
@@ -2458,7 +2476,7 @@ input[type="range"]::-moz-range-thumb {
   top: 3px;
   right: 5px;
   font-size: 8px;
-  color: var(--blue-dim);
+  color: var(--text-dim);
 }
 
 /* transport */
@@ -2528,7 +2546,7 @@ input[type="range"]::-moz-range-thumb {
   font-size: 8px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--blue-dim);
+  color: var(--text-dim);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2652,7 +2670,7 @@ input[type="range"]::-moz-range-thumb {
   background: transparent;
   border: 1px solid transparent;
   border-radius: 0;
-  color: var(--blue-mid);
+  color: var(--text);
   cursor: pointer;
 }
 
@@ -2688,10 +2706,9 @@ input[type="range"]::-moz-range-thumb {
   font-style: normal;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--blue-dim);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: var(--text-dim);
+  text-align: center;
+  overflow-wrap: anywhere;
   max-width: 100%;
 }
 
@@ -2716,14 +2733,14 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid var(--frame);
   border-radius: 0;
   padding: 4px 10px;
-  color: var(--blue-mid);
+  color: var(--text);
   text-align: left;
   cursor: pointer;
 }
 
 .calls-body .call:hover {
   border-color: var(--blue-dim);
-  color: var(--blue);
+  color: var(--text);
 }
 
 .calls-body .call-name {
@@ -2746,7 +2763,7 @@ input[type="range"]::-moz-range-thumb {
 
 .calls-body .call.sustain.on {
   border-color: var(--blue);
-  color: var(--blue);
+  color: var(--text);
   background: transparent;
 }
 
@@ -2761,7 +2778,7 @@ input[type="range"]::-moz-range-thumb {
   font-size: 8px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--blue-dim);
+  color: var(--text-dim);
   margin-right: 4px;
 }
 
@@ -2775,7 +2792,7 @@ input[type="range"]::-moz-range-thumb {
   font-size: 10px;
   line-height: 1.5;
   letter-spacing: 0.04em;
-  color: var(--blue-dim);
+  color: var(--text-dim);
 }
 
 .cparams-role {
@@ -2784,12 +2801,13 @@ input[type="range"]::-moz-range-thumb {
   line-height: 1.5;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--blue-mid);
+  color: var(--text-dim);
 }
 
 .s-cparams .enc-label {
   font-size: 9px;
   letter-spacing: 0.12em;
+  -webkit-line-clamp: 3;
 }
 
 @media (max-width: 1100px) {
@@ -2847,7 +2865,7 @@ input[type="range"]::-moz-range-thumb {
   font-size: 12px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--blue-mid);
+  color: var(--text-dim);
 }
 
 .duet-heads {
@@ -2876,7 +2894,7 @@ input[type="range"]::-moz-range-thumb {
 .duet-time {
   flex: none;
   font-variant-numeric: tabular-nums;
-  color: var(--blue-mid);
+  color: var(--text-dim);
 }
 
 .duet-bar input[type="range"] {
@@ -2888,7 +2906,7 @@ input[type="range"]::-moz-range-thumb {
   margin: auto;
   padding: 24px;
   text-align: center;
-  color: var(--blue-mid);
+  color: var(--text);
 }
 
 .duet-msg.error {
