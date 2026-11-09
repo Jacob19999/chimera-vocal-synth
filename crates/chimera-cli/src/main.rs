@@ -7,6 +7,7 @@ mod calibrate;
 mod compare;
 mod diagnose;
 mod js;
+mod musicxml;
 mod render;
 mod wav;
 
@@ -22,6 +23,9 @@ usage: chimera <command> [args] [--float]
   render song    [outdir] [male|female|child]
   render notes   <in.json> <out> [male|female|child] [--artic tracks.json] [--tele voice.tele]
                  (melody file; midi <= 0 is a rest; --artic also writes the articulators at 100 Hz)
+  render musicxml <score.musicxml|score.mxl> <out> [male|female|child]
+                  [--part id] [--voice id] [--verse id] [--bpm tempo]
+                  [--ipa syllables.txt] [--reference solo.wav]
   render beatbox [outdir] [preset name | pattern] [male|female|child] [bpm] [bars]
   render creature [creatureId] [outdir]
   render vowels  [male|female|child] [out]
@@ -154,6 +158,7 @@ fn run(args: Vec<String>) -> Result<(), String> {
                 "text" => render::text(&ctx, rest),
                 "song" => render::song(&ctx, rest),
                 "notes" => render::notes(&ctx, rest),
+                "musicxml" => musicxml::run(&ctx, rest),
                 "beatbox" => render::beatbox(&ctx, rest),
                 "creature" => render::creature(&ctx, rest),
                 "vowels" => render::vowels(&ctx, rest),

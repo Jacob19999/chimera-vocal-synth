@@ -29,10 +29,22 @@ use std::io::Read;
 use std::time::Instant;
 
 /// Render `out.len()` samples in 128-sample blocks, as the tools did.
-fn render_blocks(v: &mut HumanVoice, out: &mut [f32]) {
+pub(crate) fn render_blocks(v: &mut HumanVoice, out: &mut [f32]) {
     for block in out.chunks_mut(128) {
         v.render(block);
     }
+}
+
+pub(crate) fn singing_voice(body_name: &str, first_midi: f64) -> Result<HumanVoice, String> {
+    let mut v = HumanVoice::new(FS, body(body_name)?, 2);
+    v.set_source(&SourcePatch {
+        f0: Some(midi_to_hz(first_midi)),
+        voiced: Some(true),
+        pressure: Some(9.0),
+        tension: Some(0.55),
+        ..Default::default()
+    });
+    Ok(v)
 }
 
 /// The CMU dictionary (`public/data/cmudict.txt.gz`) loaded into a G2P.
@@ -503,7 +515,6 @@ pub fn notes(ctx: &Ctx, a: &[String]) -> Result<(), String> {
     let input = a.first().ok_or("render notes <in.json> <out> [male|female|child] [--artic tracks.json] [--tele voice.tele]")?;
     let out_name = wav_name(arg(a, 1, "out/notes"));
     let body_name = arg(a, 2, "male");
-    let b = body(body_name)?;
     let text = std::fs::read_to_string(input).map_err(|e| format!("{input}: {e}"))?;
     let j: serde_json::Value = serde_json::from_str(&text).map_err(|e| format!("{input}: {e}"))?;
     let bpm = j["bpm"].as_f64().ok_or("bpm missing")?;
@@ -518,15 +529,8 @@ pub fn notes(ctx: &Ctx, a: &[String]) -> Result<(), String> {
     }
     let t0 = j["t0"].as_f64().unwrap_or(0.3);
     let beat = 60.0 / bpm;
-    let mut v = HumanVoice::new(FS, b, 2);
     let first = raw.iter().find(|n| n[0] > 0.0).ok_or("no notes")?;
-    v.set_source(&SourcePatch {
-        f0: Some(midi_to_hz(first[0])),
-        voiced: Some(true),
-        pressure: Some(9.0),
-        tension: Some(0.55),
-        ..Default::default()
-    });
+    let mut v = singing_voice(body_name, first[0])?;
     let (mut t, mut k, mut end) = (t0, 0usize, 0.0f64);
     let mut phrase: Vec<SungNote> = Vec::new();
     let mut start = t;

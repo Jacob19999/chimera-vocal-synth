@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN"
+    "http://www.musicxml.org/dtds/partwise.dtd">
+<score-partwise version="4.0">
+  <work><work-title>Don Giovanni, K. 527</work-title></work>
+  <movement-title>Deh, vieni alla finestra — opening vocal phrase</movement-title>
+  <identification>
+    <creator type="composer">Wolfgang Amadeus Mozart</creator>
+    <creator type="lyricist">Lorenzo Da Ponte</creator>
+    <source>Mutopia 189, vocal line from the Neue Mozart-Ausgabe</source>
+  </identification>
+  <part-list><score-part id="P1"><part-name>Don Giovanni</part-name></score-part></part-list>
+  <part id="P1">
+    <measure number="4" implicit="yes">
+      <attributes>
+        <divisions>2</divisions>
+        <key><fifths>2</fifths></key>
+        <time><beats>6</beats><beat-type>8</beat-type></time>
+        <clef><sign>F</sign><line>4</line></clef>
+      </attributes>
+      <direction>
+        <direction-type><metronome><beat-unit>quarter</beat-unit><per-minute>72</per-minute></metronome></direction-type>
+        <sound tempo="72"/>
+      </direction>
+      <note>
+        <pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><type>eighth</type>
+        <lyric number="1"><syllabic>single</syllabic><text xml:lang="it">Deh</text></lyric>
+      </note>
+    </measure>
+    <measure number="5">
+      <note>
+        <pitch><step>A</step><octave>3</octave></pitch><duration>1</duration><type>eighth</type>
+        <lyric number="1"><syllabic>begin</syllabic><text xml:lang="it">vie</text><extend type="start"/></lyric>
+      </note>
+      <note>
+        <pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><type>eighth</type>
+        <lyric number="1"><extend type="stop"/></lyric>
+      </note>
+      <note>
+        <pitch><step>D</step><octave>4</octave></pitch><duration>1</duration><type>eighth</type>
+        <lyric number="1"><syllabic>middle</syllabic><text xml:lang="it">ni_al</text></lyric>
+      </note>
+      <note>
+        <pitch><step>D</step><octave>4</octave></pitch><duration>2</duration><type>quarter</type>
+        <lyric number="1"><syllabic>end</syllabic><text xml:lang="it">la</text></lyric>
+      </note>
+      <note>
+        <pitch><step>C</step><alter>1</alter><octave>4</octave></pitch><duration>1</duration><type>eighth</type>
+        <lyric number="1"><syllabic>begin</syllabic><text xml:lang="it">fi</text></lyric>
+      </note>
+    </measure>
+    <measure number="6" implicit="yes">
+      <note>
+        <pitch><step>B</step><octave>3</octave></pitch><duration>2</duration><type>quarter</type>
+        <lyric number="1"><syllabic>middle</syllabic><text xml:lang="it">ne</text></lyric>
+      </note>
+      <note>
+        <pitch><step>B</step><octave>3</octave></pitch><duration>1</duration><type>eighth</type>
+        <lyric number="1"><syllabic>end</syllabic><text xml:lang="it">stra,</text></lyric>
+      </note>
+    </measure>
+  </part>
+</score-partwise>

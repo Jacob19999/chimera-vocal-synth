@@ -44,6 +44,7 @@ Offline renders and measurement:
 ```sh
 cargo run --release -p chimera-cli -- render speech|text|song|notes|beatbox|creature|vowels …
 cargo run --release -p chimera-cli -- render text out/hall "Hello world." --environment hall
+cargo run --release -p chimera-cli -- render musicxml score.musicxml out/vocal --reference solo.wav
 cargo run --release -p chimera-cli -- diagnose       # nasal leakage, formants, bandwidths, pitch
 cargo run --release -p chimera-cli -- compare csd    # against a real singer (docs/csd-comparison.md)
 cargo run --release -p chimera-cli -- compare tsp    # against 23 real speakers (docs/speech-comparison.md)
@@ -56,6 +57,8 @@ bun tools/spectrogram.ts in.wav out.png
   anatomy, gestures).
 - [docs/environments.md](docs/environments.md): room controls, stereo CLI renders, and the
   selected pyroomacoustics routines ported to the shared Rust engine.
+- [docs/musicxml.md](docs/musicxml.md): import a vocal score, follow a reference singer's
+  timing and pitch, and render a phrase from *Don Giovanni*.
 - [docs/rust-engine.md](docs/rust-engine.md): the engine's real-time and determinism contract,
   and the browser boundary.
 - [docs/ui-redesign.md](docs/ui-redesign.md) and [docs/mockups/](docs/mockups/): the vector
