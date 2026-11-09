@@ -7,10 +7,11 @@
  * reports once; the main thread may build a new node, which restarts playback state.
  */
 import { writeGestures, writeSteps, fromUtf8, utf8, CONTROL_KEYS } from "../wasm/wire.ts";
-import type { ToWorklet, FromWorklet, TelemetryMessage } from "./protocol.ts";
+import type { ToWorklet, FromWorklet, TelemetryMessage, DuetLevels } from "./protocol.ts";
 import { MAX_GESTURES } from "./protocol.ts";
 import type { BodyMix, CreatureTelemetry, EnvironmentSettings } from "../wasm/types.ts";
 import { OrchestraSynth } from "./orchestra.ts";
+import type { OrchestraSamples } from "../audio/orchestra.ts";
 
 // Minimal AudioWorkletGlobalScope typings
 declare const sampleRate: number;
@@ -49,6 +50,9 @@ class ChimeraProcessor extends AudioWorkletProcessor {
   private environment: EnvironmentSettings | undefined;
   private harmony: { handle: number; end: number } | undefined;
   private orchestra: OrchestraSynth | undefined;
+  private orchestraSamples: OrchestraSamples = {};
+  private duetLevels: DuetLevels = [1, 1];
+  private targetDuetLevels: DuetLevels = this.duetLevels;
   private sharedRoom = false;
 
   constructor(options: { processorOptions: { module: WebAssembly.Module } }) {
@@ -167,13 +171,14 @@ class ChimeraProcessor extends AudioWorkletProcessor {
           // before the other is scheduled. Each uses the same lead on its own clock.
           const voice = x.engine_new(sampleRate);
           this.harmony = { handle: voice, end: off + Math.max(m.end, m.harmony.end) };
+          this.duetLevels = this.targetDuetLevels = m.harmony.levels ?? [1, 1];
           x.engine_set_body(voice, m.harmony.body.female, m.harmony.body.child);
           if (this.environment) this.setRoom(voice, this.environment);
           const count = writeGestures(this.mem, x.engine_records(voice), m.harmony.gestures, MAX_GESTURES);
           x.engine_schedule(voice, count, lead, 1);
         }
         if (m.replace && m.orchestra?.notes.length) {
-          this.orchestra = new OrchestraSynth(m.orchestra, sampleRate, lead);
+          this.orchestra = new OrchestraSynth(m.orchestra, sampleRate, lead, this.orchestraSamples);
           this.sharedRoom = true;
         }
         if (m.segments.length || m.orchestra) this.post({ type: "planned", id: m.id, t0: off, end: m.end + off, segments: m.segments.map((s) => ({ ...s, t0: s.t0 + off, t1: s.t1 + off })) });
@@ -181,6 +186,12 @@ class ChimeraProcessor extends AudioWorkletProcessor {
       }
       case "orchestraMix":
         this.orchestra?.setMix(m.mix);
+        break;
+      case "orchestraSamples":
+        this.orchestraSamples = m.samples;
+        break;
+      case "duetLevels":
+        if (this.harmony) this.targetDuetLevels = m.levels;
         break;
       case "stopSpeech":
         this.clearAccompaniment();
@@ -241,11 +252,14 @@ class ChimeraProcessor extends AudioWorkletProcessor {
       // on the extra voice. Allocation and disposal happen in message handlers.
       const tail = room && room.preset !== "dry" && room.mix > 0 ? 1.5 * room.decay + 0.75 : 0;
       if (this.harmony && x.engine_clock(h) < this.harmony.end + 0.4 + tail) harmonyHandle = this.harmony.handle;
+      const [lead, harmony] = this.duetLevels;
+      const leadStep = (this.targetDuetLevels[0] - lead) / n;
+      const harmonyStep = (this.targetDuetLevels[1] - harmony) / n;
       if (this.sharedRoom) {
         const dry = new Float32Array(this.mem, p, n);
         if (harmonyHandle !== undefined) {
           const other = new Float32Array(this.mem, x.engine_render_dry(harmonyHandle, n), n);
-          for (let i = 0; i < n; i++) dry[i] = 0.5 * (dry[i] + other[i]);
+          for (let i = 0; i < n; i++) dry[i] = 0.5 * (dry[i] * (lead + i * leadStep) + other[i] * (harmony + i * harmonyStep));
         }
         if (this.orchestra) {
           // The left output is scratch until the stereo room overwrites it below.
@@ -272,9 +286,10 @@ class ChimeraProcessor extends AudioWorkletProcessor {
         const right = x.engine_output_right(harmonyHandle);
         for (let c = 0; c < out.length; c++) {
           const other = new Float32Array(this.mem, c === 0 ? left : right, ch0.length);
-          for (let i = 0; i < other.length; i++) out[c][i] = 0.5 * (out[c][i] + other[i]);
+          for (let i = 0; i < other.length; i++) out[c][i] = 0.5 * (out[c][i] * (lead + i * leadStep) + other[i] * (harmony + i * harmonyStep));
         }
       }
+      this.duetLevels = this.targetDuetLevels;
     } catch (err) {
       for (const ch of out) ch.fill(0);
       this.fail(err);

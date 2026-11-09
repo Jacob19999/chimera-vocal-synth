@@ -234,11 +234,15 @@ function Wall() {
   return (
     <div className={`app text-colors mode-${mode}`}>
       <TopBar />
-      {mode === "opera" ? <OperaMode /> : <main className={`wall wall-${mode}`}>
-        <LeftScreen />
-        {mode === "play" ? <PlayRight /> : mode === "speak" ? <SpeakRight /> : mode === "sing" ? <SingRight /> : mode === "beatbox" ? <BeatboxRight /> : <BestiaryRight />}
-      </main>}
-      <EnvironmentPanel />
+      {mode === "opera" ? <OperaMode /> : (
+        <>
+          <main className={`wall wall-${mode}`}>
+            <LeftScreen />
+            {mode === "play" ? <PlayRight /> : mode === "speak" ? <SpeakRight /> : mode === "sing" ? <SingRight /> : mode === "beatbox" ? <BeatboxRight /> : <BestiaryRight />}
+          </main>
+          <EnvironmentPanel />
+        </>
+      )}
     </div>
   );
 }

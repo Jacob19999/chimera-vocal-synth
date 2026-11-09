@@ -238,6 +238,11 @@ type PianoDraw = Window & { __pianoDraw?: {
 } };
 for (const width of [1280, 390]) {
   const page = await browser.newPage({ viewport: { width, height: 900 } });
+  const banks = new Set<string>();
+  page.on("response", (response) => {
+    const path = new URL(response.url()).pathname;
+    if (path.includes("/orchestra/") && path.endsWith(".wav") && response.ok()) banks.add(path.split("/").at(-1)!);
+  });
   page.on("pageerror", (e) => errors.push(`[orchestra-${width}] pageerror: ${e.message}`));
   page.on("console", (m) => {
     if (m.type() === "error") errors.push(`[orchestra-${width}] ${m.text()}`);
@@ -270,6 +275,19 @@ for (const width of [1280, 390]) {
   }
   await page.goto(url, { waitUntil: "networkidle" });
   await page.getByRole("radio", { name: "Opera", exact: true }).click();
+  const don = page.getByRole("region", { name: "Don Giovanni", exact: true });
+  const zerlina = page.getByRole("region", { name: "Zerlina", exact: true });
+  await don.getByLabel("Don Giovanni lyrics").waitFor();
+  await zerlina.getByLabel("Zerlina lyrics").waitFor();
+  const roomPanel = page.getByRole("region", { name: "Customization", exact: true });
+  await roomPanel.getByRole("button", { name: "Import MusicXML" }).waitFor();
+  await roomPanel.getByRole("button", { name: "Là ci darem la mano", exact: true }).waitFor();
+  await roomPanel.getByLabel("Male voice preset", { exact: true }).selectOption("Lyric");
+  await roomPanel.getByLabel("Female voice preset", { exact: true }).selectOption("Dramatic");
+  await roomPanel.getByRole("slider", { name: /^Male vibrato/ }).press("ArrowRight");
+  if (await page.getByRole("region", { name: "Duet score", exact: true }).count()) {
+    errors.push(`[orchestra-${width}] the singer panels should contain the score without a separate section`);
+  }
   const library = page.getByRole("combobox", { name: "MIDI library", exact: true });
   await library.selectOption({ label: ORCHESTRA_DEMO_NAME });
   const waterfall = page.getByRole("img", { name: "Orchestra MIDI falling notes and piano keyboard" });
@@ -293,25 +311,69 @@ for (const width of [1280, 390]) {
   }
   await library.selectOption({ label: "midi-library/alternate/rehearsal.MIDI" });
   await page.getByText("rehearsal.MIDI", { exact: true }).waitFor();
+  const midiPanel = page.getByRole("region", { name: "Orchestra", exact: true });
+  const divider = page.getByRole("separator", { name: "Resize MIDI and Customization panels" });
+  const [midiBox, roomBox] = await Promise.all([midiPanel.boundingBox(), roomPanel.boundingBox()]);
+  if (!midiBox || !roomBox) throw new Error("Opera is missing its MIDI or Environment panel.");
   if (width === 1280) {
+    if (Math.abs(midiBox.width - roomBox.width) > 1 || midiBox.x >= roomBox.x || Math.abs(midiBox.y - roomBox.y) > 1) {
+      errors.push("[orchestra-1280] MIDI and Environment should start side by side at equal widths");
+    }
+    await divider.scrollIntoViewIfNeeded();
+    const handle = await divider.boundingBox();
+    if (!handle) throw new Error("Opera is missing its desktop resize handle.");
+    const x = handle.x + handle.width / 2, y = handle.y + handle.height / 2;
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await page.mouse.move(x + 120, y, { steps: 5 });
+    await page.mouse.up();
+    const wider = await midiPanel.boundingBox();
+    if (!wider || Math.abs(wider.width - midiBox.width - 120) > 10) {
+      errors.push("[orchestra-1280] dragging the divider should widen the MIDI panel");
+    }
+    await divider.press("ArrowLeft");
+    const narrower = await midiPanel.boundingBox();
+    if (!narrower || !wider || narrower.width >= wider.width) errors.push("[orchestra-1280] the divider should respond to arrow keys");
+    await roomPanel.getByLabel("Space", { exact: true }).selectOption("hall");
+    await divider.press("Home");
+    await divider.press("End");
+    await roomPanel.getByRole("slider", { name: /Room mix/ }).press("ArrowRight");
+    if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1)) {
+      errors.push("[orchestra-1280] a narrow Environment panel should keep its controls in the page");
+    }
+    await divider.press("Enter");
+    await roomPanel.getByLabel("Space", { exact: true }).selectOption("dry");
+    if (await divider.getAttribute("aria-valuenow") !== "50") errors.push("[orchestra-1280] the divider should reset to 50/50");
     await page.waitForFunction(() => {
       const draw = (window as PianoDraw).__pianoDraw;
       return draw?.white === 52 && draw.black === 36 && draw.whiteHeight > 30 && draw.blackHeight > 17
         && draw.blackBar > 0 && draw.blackBar < draw.whiteBar;
     }, undefined, { timeout: 5000 });
+  } else if (roomBox.y < midiBox.y + midiBox.height - 1 || await divider.isVisible()) {
+    errors.push("[orchestra-390] MIDI and Environment should stack on narrow screens");
   }
   await page.getByLabel("Instrument for Winds").selectOption("Oboe");
   await page.getByLabel("Level for Strings").press("Home");
   await page.getByLabel("Level for Strings").press("ArrowRight");
   await page.getByLabel(/MIDI offset/).fill("0.25");
   await page.getByLabel(/MIDI offset/).press("Enter");
+  if (width === 1280) {
+    await page.evaluate(() => scrollTo(0, 0));
+    const roll = await waterfall.boundingBox();
+    if (!roll || roll.y + roll.height > 900) errors.push("[orchestra-1280] the MIDI keyboard should fit in the initial viewport");
+  }
   await page.screenshot({ path: `${outDir}/orchestra-${width}.png`, fullPage: true });
   await page.getByRole("button", { name: "Play duet + orchestra", exact: true }).click();
   await page.getByRole("button", { name: "Stop score", exact: true }).waitFor();
+  if ([...banks].sort().join(",") !== "cello.wav,flute.wav,oboe.wav,strings.wav") {
+    errors.push(`[orchestra-${width}] missing recorded instrument banks: ${[...banks].join(", ")}`);
+  }
   await page.waitForFunction(() => {
     // @ts-expect-error debug handle
     return !!(window.__chimeraEngine?.latest?.harmony || window.__chimeraEngine?.error);
   }, undefined, { timeout: 10000 });
+  await roomPanel.getByRole("slider", { name: /Female level/ }).press("Home");
+  await roomPanel.getByRole("slider", { name: /Female level/ }).press("End");
   await page.getByRole("button", { name: "Solo Winds", exact: true }).click();
   if (await page.getByRole("button", { name: "Solo Winds", exact: true }).getAttribute("aria-pressed") !== "true") {
     errors.push(`[orchestra-${width}] solo did not latch`);

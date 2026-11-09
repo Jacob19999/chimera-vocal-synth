@@ -5,6 +5,7 @@ import type { OrchestraCue, TrackMix } from "../src/audio/orchestra.ts";
 import { ORCHESTRA_DEMO_NAME, orchestraDemoBytes } from "../src/audio/orchestraDemo.ts";
 import { planOrchestra, readOrchestraMidi } from "../src/ui/orchestraMidi.ts";
 import type { ToWorklet } from "../src/worklet/protocol.ts";
+import { OrchestraSynth } from "../src/worklet/orchestra.ts";
 import { initEngine, wasmModule } from "./harness.ts";
 
 const midi = (tracks: MidiEvent[][]) => Uint8Array.from(writeMidi({
@@ -81,6 +82,18 @@ test("the built-in Mozart accompaniment reaches the final instrumental bar", asy
   expect(longestRest).toBeLessThan(1);
   expect(plan.end).toBeGreaterThan(Math.max(lead.notes.at(-1)!.end, harmony.notes.at(-1)!.end));
   expect(lead.end - plan.end).toBeCloseTo(2.5 * lastRate);
+});
+
+test("a loaded recording follows the MIDI note and loops through its sustain", () => {
+  const synth = new OrchestraSynth({
+    delay: 0,
+    mix: [{ instrument: "Cello", gain: 1, mute: false, solo: false }],
+    notes: [{ start: 0, end: 1, midi: 60, velocity: 1, track: 0, instrument: "Piano" }],
+  }, 48000, 0, { Cello: [{ root: 60, pcm: new Float32Array([0.25, 0.5, 0.25, 0.5]), loopStart: 2 }] });
+  const out = new Float32Array(512);
+  synth.addTo(out);
+  expect(out[508]).toBeCloseTo(0.132);
+  expect(out[509]).toBeCloseTo(0.264);
 });
 
 test("worklet starts MIDI on the vocal preroll, mixes live tracks, and sends MIDI into the room", async () => {

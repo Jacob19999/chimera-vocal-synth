@@ -66,14 +66,15 @@ function Waterfall({ plan, mix }: { plan: OrchestraPlan; mix: TrackMix[] }) {
   const gains = useMemo(() => trackGains(mix), [mix]);
   const active = useRef(new Int16Array(128));
   const ref = usePhosphor(({ ctx, w, h }) => {
-    const rail = 35, keys = h - WHITE_KEY_HEIGHT, window = 5;
-    const piano = w >= 700 ? fullPiano : range.compactPiano;
+    const rail = 35, keys = h - WHITE_KEY_HEIGHT, lookahead = 5;
+    // The panel can be narrowed independently of the desktop viewport.
+    const piano = window.innerWidth >= 900 || w >= 700 ? fullPiano : range.compactPiano;
     const whiteW = (w - rail) / piano.whites;
     if (whiteW <= 0 || keys <= 0) return;
     const x = (position: number) => rail + position * whiteW;
     const at = scoreTime();
     const time = Math.max(-0.35, at ?? 0);
-    const y = (t: number) => keys * (1 - (t - time) / window);
+    const y = (t: number) => keys * (1 - (t - time) / lookahead);
     ctx.font = "10px system-ui";
     ctx.textBaseline = "middle";
     for (const key of piano.keys) {
@@ -86,7 +87,7 @@ function Waterfall({ plan, mix }: { plan: OrchestraPlan; mix: TrackMix[] }) {
         ctx.fillRect(x(key.left), 0, 1, keys);
       }
     }
-    for (let s = Math.max(0, Math.ceil(time)); s < time + window; s++) {
+    for (let s = Math.max(0, Math.ceil(time)); s < time + lookahead; s++) {
       const row = y(s);
       ctx.fillStyle = "#193a4f";
       ctx.fillRect(rail, row, w - rail, 1);
@@ -103,7 +104,7 @@ function Waterfall({ plan, mix }: { plan: OrchestraPlan; mix: TrackMix[] }) {
     }
     for (let i = lo; i < plan.notes.length; i++) {
       const note = plan.notes[i];
-      if (note.start >= time + window) break;
+      if (note.start >= time + lookahead) break;
       const key = piano.keys[note.midi - piano.low];
       if (note.end <= time || !key) continue;
       const top = Math.max(0, y(note.end));
@@ -124,7 +125,7 @@ function Waterfall({ plan, mix }: { plan: OrchestraPlan; mix: TrackMix[] }) {
       const track = pressed[key.midi];
       ctx.fillStyle = track >= 0 ? color(track) : "#d2e3ed";
       ctx.fillRect(x(key.center - 0.5) + 0.5, keys, Math.max(1, whiteW - 1), WHITE_KEY_HEIGHT);
-      if (whiteW >= 11 && (key.midi === PIANO_LOW || key.midi % 12 === 0)) {
+      if (whiteW >= 9 && (key.midi === PIANO_LOW || key.midi % 12 === 0)) {
         ctx.fillStyle = "#142e3e";
         ctx.fillText(key.midi === PIANO_LOW ? "A0" : `C${Math.floor(key.midi / 12) - 1}`, x(key.center), keys + WHITE_KEY_HEIGHT - 9, whiteW - 2);
       }

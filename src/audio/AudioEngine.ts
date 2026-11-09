@@ -9,8 +9,9 @@ import type { BodyMix } from "../wasm/types.ts";
 import type { HumanArtic } from "../wasm/types.ts";
 import type { VoiceSource } from "../wasm/types.ts";
 import type { EnvironmentSettings } from "../wasm/types.ts";
-import type { HarmonyPlan } from "../worklet/protocol.ts";
+import type { DuetLevels, HarmonyPlan } from "../worklet/protocol.ts";
 import type { OrchestraCue, TrackMix } from "./orchestra.ts";
+import { loadOrchestraSamples } from "./orchestraSamples.ts";
 
 type Listener = (t: TelemetryMessage) => void;
 
@@ -26,6 +27,7 @@ export class AudioEngine {
   /** "close mic" chain: proximity bass, presence, compression (beatboxers cup the mic) */
   private micIn: AudioNode | null = null;
   private micOn = false;
+  private orchestraSamples: Promise<void> | undefined;
   latest: TelemetryMessage | null = null;
   /** performance.now() when `latest` arrived */
   private latestAt = 0;
@@ -151,6 +153,19 @@ export class AudioEngine {
 
   setOrchestraMix(mix: TrackMix[]): void {
     this.send({ type: "orchestraMix", mix });
+  }
+
+  setDuetLevels(levels: DuetLevels): void {
+    this.send({ type: "duetLevels", levels });
+  }
+
+  prepareOrchestra(): Promise<void> {
+    if (!this.ctx || !this.node) return Promise.resolve();
+    this.orchestraSamples ??= loadOrchestraSamples(this.ctx).then((samples) => {
+      if (Object.keys(samples).length) this.send({ type: "orchestraSamples", samples });
+      else this.orchestraSamples = undefined;
+    });
+    return this.orchestraSamples;
   }
 
   /** Switch voice ("human" or a creature id), starting the creature from the given settings. */

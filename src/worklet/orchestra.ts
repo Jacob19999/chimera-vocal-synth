@@ -1,4 +1,4 @@
-import { trackGains, type Instrument, type OrchestraCue, type OrchestraNote, type TrackMix } from "../audio/orchestra.ts";
+import { trackGains, type Instrument, type OrchestraCue, type OrchestraNote, type OrchestraSample, type OrchestraSamples, type TrackMix } from "../audio/orchestra.ts";
 
 const POLYPHONY = 96;
 const TABLE_SIZE = 512;
@@ -6,6 +6,7 @@ const HARMONIC_LIMITS = [1, 2, 4, 8];
 const RELEASE_LIMIT = 0.24;
 // A track at unity should sit within reach of the dry vocal bus.
 const NOTE_LEVEL = 0.32;
+const RECORDING_LEVEL = 1.65; // Match the recorded accompaniment to the calibrated synth mix.
 
 function patch(attack: number, release: number, decay: number, partials: number[], noise = 0) {
   const tables = HARMONIC_LIMITS.map((count) => {
@@ -52,6 +53,7 @@ interface Voice {
   amplitude: number;
   step: number;
   table: Float32Array;
+  recording?: OrchestraSample;
   patch: ReturnType<typeof patch>;
   seed: number;
   noise: number;
@@ -71,7 +73,7 @@ export class OrchestraSynth {
   private readonly lastGains: number[];
   private readonly notes: OrchestraNote[];
 
-  constructor(cue: OrchestraCue, private readonly rate: number, lead: number) {
+  constructor(cue: OrchestraCue, private readonly rate: number, lead: number, private readonly samples: OrchestraSamples = {}) {
     this.lead = cue.delay + lead;
     this.notes = cue.notes;
     this.mix = cue.mix;
@@ -102,7 +104,8 @@ export class OrchestraSynth {
       const previous = this.lastGains[v.track];
       if (gain === 0 && previous === 0) continue;
       const dg = (gain - previous) / out.length;
-      const attack = v.patch.attack * this.rate;
+      const recording = v.recording;
+      const attack = (recording ? 0.008 : v.patch.attack) * this.rate;
       const release = v.done - v.end;
       const decay = v.patch.decay / this.rate;
       for (let i = Math.max(0, v.start - this.frame); i < out.length && this.frame + i < v.done; i++) {
@@ -110,13 +113,21 @@ export class OrchestraSynth {
         const tail = Math.min(1, (v.done - this.frame - i) / release);
         const env = Math.min(1, age / attack) * tail / (1 + age * decay);
         const phase = age * v.step;
-        const index = Math.floor(phase);
-        const a = v.table[index & (TABLE_SIZE - 1)];
-        const b = v.table[(index + 1) & (TABLE_SIZE - 1)];
-        let sample = a + (b - a) * (phase - index);
-        if (v.noise) {
-          v.seed = (Math.imul(1664525, v.seed) + 1013904223) | 0;
-          sample = sample * (1 - v.noise) + v.seed / 2147483648 * v.noise;
+        let sample: number;
+        if (recording) {
+          const { pcm, loopStart } = recording;
+          const position = phase < pcm.length ? phase : loopStart + (phase - loopStart) % (pcm.length - loopStart);
+          const index = Math.floor(position);
+          const a = pcm[index], b = pcm[index + 1] ?? pcm[loopStart];
+          sample = a + (b - a) * (position - index);
+        } else {
+          const index = Math.floor(phase);
+          const a = v.table[index & (TABLE_SIZE - 1)], b = v.table[(index + 1) & (TABLE_SIZE - 1)];
+          sample = a + (b - a) * (phase - index);
+          if (v.noise) {
+            v.seed = (Math.imul(1664525, v.seed) + 1013904223) | 0;
+            sample = sample * (1 - v.noise) + v.seed / 2147483648 * v.noise;
+          }
         }
         out[i] += sample * env * v.amplitude * (previous + i * dg);
       }
@@ -134,6 +145,14 @@ export class OrchestraSynth {
     }
     const instrument = this.mix[note.track].instrument ?? note.instrument;
     const shape = patches[instrument];
+    let recording: OrchestraSample | undefined;
+    let distance = 9;
+    for (const sample of this.samples[instrument] ?? []) {
+      const steps = Math.abs(note.midi - sample.root);
+      if (steps >= distance) continue;
+      recording = sample;
+      distance = steps;
+    }
     const midi = instrument === "Percussion" ? (note.midi < 37 ? 28 : Math.min(note.midi, 60)) : note.midi;
     const hz = 440 * 2 ** ((midi - 69) / 12);
     const maxHarmonic = this.rate * 0.45 / hz;
@@ -143,8 +162,9 @@ export class OrchestraSynth {
     if (instrument === "Percussion") v.end = Math.min(v.end, start + Math.round(0.18 * this.rate));
     v.done = v.end + Math.round(Math.min(RELEASE_LIMIT, shape.release) * this.rate);
     v.track = note.track;
-    v.amplitude = NOTE_LEVEL * note.velocity ** 1.4;
-    v.step = hz * TABLE_SIZE / this.rate;
+    v.amplitude = NOTE_LEVEL * note.velocity ** 1.4 * (recording ? RECORDING_LEVEL : 1);
+    v.step = recording ? 2 ** ((midi - recording.root) / 12) : hz * TABLE_SIZE / this.rate;
+    v.recording = recording;
     v.table = shape.tables[band];
     v.patch = shape;
     v.seed = seed;

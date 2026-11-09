@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { engine } from "../../audio/AudioEngine.ts";
 import { useStore } from "../store.ts";
-import { useSing, playDemo, stopSinging, soundingSyllable, sungNow, DEMO_SONGS, loadScore, playScore, type LoadedScore, type OrchestraPlayback } from "../singing.ts";
+import { useSing, playDemo, stopSinging, soundingSyllable, sungNow, DEMO_SONGS, loadScore, playScore, type LoadedScore, type OrchestraPlayback, type DuetVoices } from "../singing.ts";
 import { mouthWords } from "../mouthWords.ts";
 import { V } from "../colors.ts";
 import { PRESETS } from "../body.ts";
@@ -169,7 +170,7 @@ async function readScoreFiles(files: File[]): Promise<LoadedScore> {
   return { title: score.name.replace(/\.(musicxml|xml|mxl)$/i, ""), tracks };
 }
 
-function TrackLyrics({ track, at }: { track: ScoreTrack; at: number }) {
+export function TrackLyrics({ track, at, showName = true }: { track: ScoreTrack; at: number; showName?: boolean }) {
   const list = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const box = list.current;
@@ -181,7 +182,7 @@ function TrackLyrics({ track, at }: { track: ScoreTrack; at: number }) {
   }, [at]);
   return (
     <div>
-      <strong>{track.name}</strong>
+      {showName && <strong>{track.name}</strong>}
       <div ref={list} className="score-syllables" aria-label={`${track.name} lyrics`}>
         {track.notes.map(({ syl }, k) => (
           <span key={k} className={k === at ? "current" : undefined} aria-current={k === at || undefined}>
@@ -210,7 +211,9 @@ export function loadMozart(): void {
   loadScore({ title: MOZART, tracks: importScore({ xml: mozart }, mozartIpa) });
 }
 
-export function ScoreControls({ duetOnly = false, orchestra, orchestraError }: { duetOnly?: boolean; orchestra?: OrchestraPlayback; orchestraError?: string }) {
+export function ScoreControls({ duetOnly = false, showLyrics = true, orchestra, orchestraError, duetVoices }: {
+  duetOnly?: boolean; showLyrics?: boolean; orchestra?: OrchestraPlayback; orchestraError?: string; duetVoices?: () => DuetVoices;
+}) {
   const score = useSing((s) => s.score);
   const demo = useSing((s) => s.demo);
   const starting = useStore((s) => s.starting);
@@ -273,13 +276,14 @@ export function ScoreControls({ duetOnly = false, orchestra, orchestraError }: {
                 await playScore(score, body, async () => {
                   await state.start();
                   if (!useStore.getState().started) throw new Error(useStore.getState().startError ?? "Audio could not start.");
-                }, orchestra);
+                  if (orchestra) await engine.prepareOrchestra();
+                }, orchestra, duetVoices);
               } catch (e) {
                 setError(e instanceof Error ? e.message : String(e));
               }
             }}>{playing ? "Stop score" : orchestra ? "Play duet + orchestra" : score.tracks.length === 2 ? "Play duet" : "Play score"}</Chip>
           </div>
-          <ScoreLyrics score={score} />
+          {showLyrics && <ScoreLyrics score={score} />}
         </>
       ) : null}
       {busy ? <span role="status">Importing score…</span> : null}

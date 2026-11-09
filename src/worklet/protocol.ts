@@ -6,7 +6,7 @@ import type { Gesture } from "../wasm/types.ts";
 import type { CreatureTelemetry } from "../wasm/types.ts";
 import type { BeatStep, BodyMix } from "../wasm/types.ts";
 import type { EnvironmentSettings } from "../wasm/types.ts";
-import type { OrchestraCue, TrackMix } from "../audio/orchestra.ts";
+import type { OrchestraCue, OrchestraSamples, TrackMix } from "../audio/orchestra.ts";
 
 export interface PhraseMsg {
   segments: Segment[];
@@ -18,7 +18,8 @@ export type BodyName = "male" | "female" | "child";
 
 /** Maximum number of gesture records the wasm schedule buffer can receive in one command. */
 export const MAX_GESTURES = 4000;
-export interface HarmonyPlan { body: BodyMix; gestures: Gesture[]; end: number }
+export type DuetLevels = [lead: number, harmony: number];
+export interface HarmonyPlan { body: BodyMix; gestures: Gesture[]; end: number; levels?: DuetLevels }
 
 export type ToWorklet =
   | { type: "environment"; settings: EnvironmentSettings }
@@ -30,6 +31,8 @@ export type ToWorklet =
   /** gestures planned on the main thread with times relative to "now" (the worklet adds its clock) */
   | { type: "schedule"; gestures: Gesture[]; segments: PlannedSegment[]; end: number; id: number; replace: boolean; lead?: number; harmony?: HarmonyPlan; orchestra?: OrchestraCue }
   | { type: "orchestraMix"; mix: TrackMix[] }
+  | { type: "orchestraSamples"; samples: OrchestraSamples }
+  | { type: "duetLevels"; levels: DuetLevels }
   | { type: "stopSpeech" }
   /** switch the active voice: "human" or a creature id */
   | { type: "creature"; id: string; params?: Record<string, number> }

@@ -127,6 +127,13 @@ test("the two imported Mozart parts render together and stop on the same command
   expect(audible).toBe(true);
   expect(duetSnapshots.at(-1)?.harmony?.body).toEqual(female);
   expect(duetSnapshots.at(-1)?.body).toEqual(male);
+  send(mixed, { type: "duetLevels", levels: [0, 1] });
+  block(mixed);
+  block(onlyLower);
+  block(onlyUpper);
+  const adjusted = block(mixed), upperOnly = block(onlyUpper);
+  block(onlyLower);
+  for (let c = 0; c < 2; c++) expect(adjusted[c]).toEqual(Float32Array.from(upperOnly[c], (v) => v / 2));
   send(mixed, { type: "stopSpeech" });
   send(onlyLower, { type: "stopSpeech" });
   expect(block(mixed)).toEqual(block(onlyLower));

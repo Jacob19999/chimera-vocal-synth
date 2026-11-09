@@ -15,11 +15,13 @@ import { EXHALE_LABEL } from "../wasm/engine.ts";
 import { DEMO_SONGS } from "../wasm/engine.ts";
 import type { Gesture, Plan, SungNote } from "../wasm/types.ts";
 import { nearestBody, PRESETS, type BodyMix } from "./body.ts";
-import { MAX_GESTURES } from "../worklet/protocol.ts";
+import { MAX_GESTURES, type DuetLevels } from "../worklet/protocol.ts";
 import type { OrchestraCue, OrchestraPlan, TrackMix } from "../audio/orchestra.ts";
 
 export interface LoadedScore { title: string; tracks: ScoreTrack[] }
 export interface OrchestraPlayback { plan: OrchestraPlan; mix: () => TrackMix[] }
+export interface VocalSettings { gain: number; vibrato: number }
+export type DuetVoices = [lead: VocalSettings, harmony: VocalSettings];
 const SCORE_LEAD = 0.35;
 const SCORE_GAP = 1e-6;
 
@@ -320,27 +322,33 @@ export function loadScore(score: LoadedScore | null): void {
   useSing.setState({ score });
 }
 
-export async function playScore(score: LoadedScore, body: BodyMix, ready: () => Promise<void>, orchestra?: OrchestraPlayback): Promise<void> {
+export async function playScore(
+  score: LoadedScore, body: BodyMix, ready: () => Promise<void>, orchestra?: OrchestraPlayback, duetVoices?: () => DuetVoices,
+): Promise<void> {
   stopSinging();
   const token = demoToken;
   await ready();
   if (token !== demoToken) return;
   const vibrato = useSing.getState().vibrato;
+  const voices = duetVoices?.();
   const [lead, harmony] = score.tracks;
   const shifted = (track: ScoreTrack) => track.notes.map((n) => ({ ...n, start: n.start + SCORE_LEAD, end: n.end + SCORE_LEAD }));
   const notes = shifted(lead);
   const harmonyNotes = harmony ? shifted(harmony) : [];
-  const harmonyPlan = harmony ? planTrack(harmonyNotes, PRESETS.female, vibrato) : undefined;
-  const plan = planTrack(notes, body, vibrato);
+  const harmonyPlan = harmony ? planTrack(harmonyNotes, PRESETS.female, voices?.[1].vibrato ?? vibrato) : undefined;
+  const plan = planTrack(notes, body, voices?.[0].vibrato ?? vibrato);
   // Keep the shared score clock running through written rests, including its final bars.
   plan.end = Math.max(plan.end, lead.end + SCORE_LEAD, (harmony?.end ?? 0) + SCORE_LEAD, (orchestra?.plan.end ?? 0) + SCORE_LEAD);
   const cue = orchestra ? { notes: orchestra.plan.notes, delay: SCORE_LEAD, mix: orchestra.mix() } : undefined;
-  queueSong(score.title, notes, plan, harmonyNotes, harmonyPlan, cue);
+  const levels: DuetLevels | undefined = voices && [voices[0].gain, voices[1].gain];
+  queueSong(score.title, notes, plan, harmonyNotes, harmonyPlan, cue, levels);
 }
 
-function queueSong(name: string, notes: ScoreNote[], plan: Plan, harmonyNotes: ScoreNote[] = [], harmonyPlan?: Plan, orchestra?: OrchestraCue): void {
+function queueSong(
+  name: string, notes: ScoreNote[], plan: Plan, harmonyNotes: ScoreNote[] = [], harmonyPlan?: Plan, orchestra?: OrchestraCue, levels?: DuetLevels,
+): void {
   const end = Math.max(plan.end, harmonyPlan?.end ?? 0);
-  const id = engine.schedule({ ...plan, end }, true, harmonyPlan ? { ...harmonyPlan, body: PRESETS.female } : undefined, orchestra);
+  const id = engine.schedule({ ...plan, end }, true, harmonyPlan ? { ...harmonyPlan, body: PRESETS.female, levels } : undefined, orchestra);
   const parent: number[] = [];
   notes.forEach((n, i) => parent.push(n.syl.melisma && i > 0 ? parent[i - 1] : i));
   const shown = parent.map((p) => written(notes[p].syl));

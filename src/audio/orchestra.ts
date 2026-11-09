@@ -1,4 +1,4 @@
-/** The orchestra uses a compact palette of synthesized instrument sounds. */
+/** Instrument choices for MIDI playback and track overrides. */
 export const INSTRUMENTS = [
   "Piano", "Harp", "Organ", "Guitar", "Bass", "Violin", "Viola", "Cello",
   "Contrabass", "Strings", "Trumpet", "Trombone", "French horn", "Tuba",
@@ -6,6 +6,14 @@ export const INSTRUMENTS = [
 ] as const;
 
 export type Instrument = typeof INSTRUMENTS[number];
+
+export interface OrchestraSample {
+  root: number;
+  pcm: Float32Array;
+  loopStart: number;
+}
+
+export type OrchestraSamples = Partial<Record<Instrument, OrchestraSample[]>>;
 
 /** General MIDI program to the closest instrument in the palette. */
 export function midiInstrument(program: number, channel: number): Instrument {

@@ -1,11 +1,13 @@
-import { useId } from "react";
+import { useId, type ReactNode } from "react";
 import { ENVIRONMENTS, type EnvironmentId } from "../../wasm/engine.ts";
 import { useStore } from "../store.ts";
 import { Slider } from "./Controls.tsx";
 import { Screen } from "./Screen.tsx";
 
 /** One shared listening space for every live mode, including creatures and beatbox. */
-export function EnvironmentPanel() {
+export function EnvironmentPanel({ title = "Environment", sub = "Shared listening space", children }: {
+  title?: string; sub?: string; children?: ReactNode;
+}) {
   const spaceId = useId();
   const settings = useStore((s) => s.environment);
   const set = useStore((s) => s.setEnvironment);
@@ -13,7 +15,7 @@ export function EnvironmentPanel() {
   const dry = settings.preset === "dry";
   const percent = (v: number) => `${Math.round(v * 100)} %`;
   return (
-    <Screen title="Environment" sub="Shared listening space" className="s-environment">
+    <Screen title={title} sub={sub} className="s-environment">
       <div className="environment-controls">
         <div className="environment-choice">
           <label htmlFor={spaceId}>Space</label>
@@ -32,6 +34,7 @@ export function EnvironmentPanel() {
           <p className="environment-description">More damping softens the high frequencies in the room tail.</p>
         </>}
       </div>
+      {children}
     </Screen>
   );
 }
