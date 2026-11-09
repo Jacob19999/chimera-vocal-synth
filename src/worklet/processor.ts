@@ -248,11 +248,19 @@ class ChimeraProcessor extends AudioWorkletProcessor {
           for (let i = 0; i < n; i++) dry[i] = 0.5 * (dry[i] + other[i]);
         }
         if (this.orchestra) {
-          if (!this.orchestra.addTo(dry)) this.orchestra = undefined;
-          // Leave room for coincident orchestral attacks without clipping the dry bus.
+          // The left output is scratch until the stereo room overwrites it below.
+          ch0.fill(0);
+          if (!this.orchestra.addTo(ch0)) this.orchestra = undefined;
           for (let i = 0; i < n; i++) {
-            const peak = Math.abs(dry[i]);
-            if (peak > 0.8) dry[i] = Math.sign(dry[i]) * (1 - 0.04 / (peak - 0.6));
+            const instruments = ch0[i];
+            const orchestraPeak = Math.abs(instruments);
+            // Limit dense MIDI chords before they compete with the singers for headroom.
+            const accompaniment = orchestraPeak > 0.45
+              ? Math.sign(instruments) * (0.65 - 0.04 / (orchestraPeak - 0.25))
+              : instruments;
+            const mixed = dry[i] + accompaniment;
+            const peak = Math.abs(mixed);
+            dry[i] = peak > 0.8 ? Math.sign(mixed) * (1 - 0.04 / (peak - 0.6)) : mixed;
           }
         }
         x.engine_apply_environment(h, n);

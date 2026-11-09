@@ -141,11 +141,20 @@ test("worklet starts MIDI on the vocal preroll, mixes live tracks, and sends MID
   expect(stereo).toBeGreaterThan(0.001);
   send(dry, { type: "orchestraMix", mix: [{ ...mix[0], mute: true }, { ...mix[1], solo: true }] });
   render(dry);
-  expect(level(render(dry)[0])).toBeGreaterThan(0.01);
+  expect(level(render(dry)[0])).toBeGreaterThan(0.1);
   send(dry, { type: "orchestraMix", mix: [{ ...mix[0], mute: true }, { ...mix[1], solo: true, mute: true }] });
   render(dry);
   expect(level(render(dry)[0])).toBeLessThan(1e-7);
   send(wet, { type: "stopSpeech" });
   expect(level(render(wet)[0])).toBeGreaterThan(0.0001);
+
+  const denseChord: OrchestraCue = { delay: 0, mix, notes: Array.from({ length: 32 }, () => ({
+    start: 0, end: 0.2, midi: 69, velocity: 1, track: 0, instrument: "Organ",
+  })) };
+  send(dry, { type: "schedule", id: 2, lead: 0, replace: true, gestures: [], segments: [], end: 0.2, orchestra: denseChord });
+  let loudPeak = 0;
+  for (let i = 0; i < 30; i++) loudPeak = Math.max(loudPeak, level(render(dry)[0]));
+  expect(loudPeak).toBeGreaterThan(0.5);
+  expect(loudPeak).toBeLessThan(0.65);
   expect(errors).toEqual([]);
 });

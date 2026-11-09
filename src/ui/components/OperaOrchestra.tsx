@@ -28,6 +28,8 @@ const COLORS = ["#56ccff", "#ffbd69", "#79e996", "#ff83c8", "#b4a2ff", "#ff897b"
 const BLACK_KEYS = new Set([1, 3, 6, 8, 10]);
 const PIANO_LOW = 21; // A0
 const PIANO_HIGH = 108; // C8
+const WHITE_KEY_HEIGHT = 38;
+const BLACK_KEY_HEIGHT = 23;
 const color = (track: number) => COLORS[track % COLORS.length];
 
 /** Key centers and note lanes in units of one white key's width. */
@@ -64,7 +66,7 @@ function Waterfall({ plan, mix }: { plan: OrchestraPlan; mix: TrackMix[] }) {
   const gains = useMemo(() => trackGains(mix), [mix]);
   const active = useRef(new Int16Array(128));
   const ref = usePhosphor(({ ctx, w, h }) => {
-    const rail = 35, keys = h - 30, window = 5;
+    const rail = 35, keys = h - WHITE_KEY_HEIGHT, window = 5;
     const piano = w >= 700 ? fullPiano : range.compactPiano;
     const whiteW = (w - rail) / piano.whites;
     if (whiteW <= 0 || keys <= 0) return;
@@ -107,7 +109,7 @@ function Waterfall({ plan, mix }: { plan: OrchestraPlan; mix: TrackMix[] }) {
       const top = Math.max(0, y(note.end));
       const bottom = Math.min(keys, y(note.start));
       const audible = gains[note.track] > 0 && note.velocity > 0;
-      const barWidth = Math.max(1, Math.min(key.center - key.left, key.right - key.center) * 2 * whiteW - 1);
+      const barWidth = Math.max(1, whiteW * (key.black ? 0.28 : 0.68));
       ctx.globalAlpha = audible ? 0.9 : 0.2;
       ctx.fillStyle = color(note.track);
       ctx.fillRect(x(key.center) - barWidth / 2, top, barWidth, Math.min(keys - top, Math.max(1, bottom - top)));
@@ -121,17 +123,17 @@ function Waterfall({ plan, mix }: { plan: OrchestraPlan; mix: TrackMix[] }) {
       if (key.black) continue;
       const track = pressed[key.midi];
       ctx.fillStyle = track >= 0 ? color(track) : "#d2e3ed";
-      ctx.fillRect(x(key.center - 0.5) + 0.5, keys, Math.max(1, whiteW - 1), 30);
+      ctx.fillRect(x(key.center - 0.5) + 0.5, keys, Math.max(1, whiteW - 1), WHITE_KEY_HEIGHT);
       if (whiteW >= 11 && (key.midi === PIANO_LOW || key.midi % 12 === 0)) {
         ctx.fillStyle = "#142e3e";
-        ctx.fillText(key.midi === PIANO_LOW ? "A0" : `C${Math.floor(key.midi / 12) - 1}`, x(key.center), keys + 22, whiteW - 2);
+        ctx.fillText(key.midi === PIANO_LOW ? "A0" : `C${Math.floor(key.midi / 12) - 1}`, x(key.center), keys + WHITE_KEY_HEIGHT - 9, whiteW - 2);
       }
     }
     for (const key of piano.keys) {
       if (!key.black) continue;
       const track = pressed[key.midi];
       ctx.fillStyle = track >= 0 ? color(track) : "#263b4a";
-      ctx.fillRect(x(key.center - 0.3), keys, whiteW * 0.6, 17);
+      ctx.fillRect(x(key.center - 0.3), keys, whiteW * 0.6, BLACK_KEY_HEIGHT);
     }
     ctx.fillStyle = "#b3d8eb";
     ctx.textAlign = "left";

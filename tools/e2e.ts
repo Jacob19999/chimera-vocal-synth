@@ -232,7 +232,10 @@ await run({ width: 390, height: 844 }, "mobile");
 
 // Import the same generated accompaniment on desktop and mobile. The MIDI mixer and canvas
 // should stay in the Opera layout while the duet and orchestra share a running transport.
-type PianoDraw = Window & { __pianoDraw?: { white: number; black: number; whiteWidth: number; blackWidth: number } };
+type PianoDraw = Window & { __pianoDraw?: {
+  white: number; black: number; whiteHeight: number; blackHeight: number;
+  bars: { center: number; width: number }[]; whiteBar: number; blackBar: number;
+} };
 for (const width of [1280, 390]) {
   const page = await browser.newPage({ viewport: { width, height: 900 } });
   page.on("pageerror", (e) => errors.push(`[orchestra-${width}] pageerror: ${e.message}`));
@@ -246,16 +249,19 @@ for (const width of [1280, 390]) {
         if (this.canvas.matches(".orchestra-waterfall canvas")) {
           const page = window as PianoDraw;
           if (x === 0 && y === 0 && this.fillStyle === "#000000") {
-            page.__pianoDraw = { white: 0, black: 0, whiteWidth: 0, blackWidth: 0 };
+            page.__pianoDraw = { white: 0, black: 0, whiteHeight: 0, blackHeight: 0, bars: [], whiteBar: 0, blackBar: 0 };
           }
           const draw = page.__pianoDraw;
-          if (draw && h === 30 && this.fillStyle === "#d2e3ed") {
+          if (draw && this.fillStyle === "#ffbd69") draw.bars.push({ center: x + w / 2, width: w });
+          if (draw && this.fillStyle === "#d2e3ed") {
             draw.white++;
-            draw.whiteWidth = w;
+            draw.whiteHeight = h;
+            draw.whiteBar = draw.bars.find((bar) => Math.abs(bar.center - x - w / 2) < 0.1)?.width ?? draw.whiteBar;
           }
-          if (draw && h === 17 && this.fillStyle === "#263b4a") {
+          if (draw && this.fillStyle === "#263b4a") {
             draw.black++;
-            draw.blackWidth = w;
+            draw.blackHeight = h;
+            draw.blackBar = draw.bars.find((bar) => Math.abs(bar.center - x - w / 2) < 0.1)?.width ?? draw.blackBar;
           }
         }
         fill.call(this, x, y, w, h);
@@ -290,7 +296,8 @@ for (const width of [1280, 390]) {
   if (width === 1280) {
     await page.waitForFunction(() => {
       const draw = (window as PianoDraw).__pianoDraw;
-      return draw?.white === 52 && draw.black === 36 && draw.whiteWidth > draw.blackWidth;
+      return draw?.white === 52 && draw.black === 36 && draw.whiteHeight > 30 && draw.blackHeight > 17
+        && draw.blackBar > 0 && draw.blackBar < draw.whiteBar;
     }, undefined, { timeout: 5000 });
   }
   await page.getByLabel("Instrument for Winds").selectOption("Oboe");

@@ -4,6 +4,8 @@ const POLYPHONY = 96;
 const TABLE_SIZE = 512;
 const HARMONIC_LIMITS = [1, 2, 4, 8];
 const RELEASE_LIMIT = 0.24;
+// A track at unity should sit within reach of the dry vocal bus.
+const NOTE_LEVEL = 0.32;
 
 function patch(attack: number, release: number, decay: number, partials: number[], noise = 0) {
   const tables = HARMONIC_LIMITS.map((count) => {
@@ -141,7 +143,7 @@ export class OrchestraSynth {
     if (instrument === "Percussion") v.end = Math.min(v.end, start + Math.round(0.18 * this.rate));
     v.done = v.end + Math.round(Math.min(RELEASE_LIMIT, shape.release) * this.rate);
     v.track = note.track;
-    v.amplitude = 0.032 * note.velocity ** 1.4;
+    v.amplitude = NOTE_LEVEL * note.velocity ** 1.4;
     v.step = hz * TABLE_SIZE / this.rate;
     v.table = shape.tables[band];
     v.patch = shape;
